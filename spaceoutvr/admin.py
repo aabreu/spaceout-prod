@@ -1,3 +1,4 @@
 from django.contrib import admin
+from spaceoutvr.models import SpaceoutUser
 
-# Register your models here.
+admin.site.register(SpaceoutUser)

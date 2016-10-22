@@ -4,6 +4,8 @@ from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+from django.core.mail import EmailMessage
+
 class JSONResponse(HttpResponse):
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
@@ -12,4 +14,6 @@ class JSONResponse(HttpResponse):
 
 @csrf_exempt
 def home(request):
-    return HttpResponse(status=200)
+    email = EmailMessage('SpaceoutVR Account Activation', 'hey buddy, blah', to=['agustinabreu@gmail.com'])
+    email.send()
+    return JSONResponse(status=200, data={'coins':1203, 'name':'pepe'})

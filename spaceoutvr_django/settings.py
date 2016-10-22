@@ -20,12 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
+DEBUG = True
+IS_LOCAL = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
 
+ACCOUNT_EMAIL_UNIQUE = True
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
 
 # Application definition
 
@@ -36,8 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
     'rest_framework',
     'spaceoutvr',
+    'account',
+    'user_management.api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,18 +53,37 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'account.middleware.LocaleMiddleware',
+    'account.middleware.TimezoneMiddleware',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'account.context_processors.account',
+]
+
+MIGRATION_MODULES = {
+    'api': 'spaceoutvr.migrations.user_management_api',  # substitute the path to your projectmigrations folder
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': {
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'user_management.api.authentication.TokenAuthentication',
+    },
+}
 
 ROOT_URLCONF = 'spaceoutvr_django.urls'
 
 WSGI_APPLICATION = 'spaceoutvr_django.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 
-if os.environ.get('DJANGO_LOCAL'):
+if IS_LOCAL:
     DATABASES = {
     	'default': {
     		'ENGINE': 'django.db.backends.mysql',
@@ -103,3 +127,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
+
+AUTH_USER_MODEL = 'spaceoutvr.SpaceoutUser'
+SENTRY_CLIENT = 'user_management.utils.sentry.SensitiveDjangoClient'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'agustinabreu@gmail.com'
+EMAIL_HOST_PASSWORD = '$pac30utVR'
+# EMAIL_HOST_PASSWORD = 'G0rri0nV3ntanaT3rmo'
+EMAIL_PORT = 587
