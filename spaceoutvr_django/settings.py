@@ -18,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
+# SECRET_KEY = "efhiuwehfiuwehfiuehuighiowejfioewjio"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -26,11 +27,13 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
 
-ACCOUNT_EMAIL_UNIQUE = True
-ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+# ACCOUNT_EMAIL_UNIQUE = True
+# ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+
+AUTH_USER_MODEL = 'spaceoutvr.SpaceoutUser'
+AUTH_EMAIL_VERIFICATION = True
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,41 +41,38 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.sites',
     'rest_framework',
+    'rest_framework.authtoken',
     'spaceoutvr',
-    'account',
-    'user_management.api',
+    'authemail',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'account.middleware.LocaleMiddleware',
-    'account.middleware.TimezoneMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = [
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-    'account.context_processors.account',
-]
-
-MIGRATION_MODULES = {
-    'api': 'spaceoutvr.migrations.user_management_api',  # substitute the path to your projectmigrations folder
-}
+# TEMPLATE_CONTEXT_PROCESSORS = [
+#     'django.contrib.auth.context_processors.auth',
+#     'django.core.context_processors.request',
+# ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'user_management.api.authentication.TokenAuthentication',
-    },
+    )
 }
 
 ROOT_URLCONF = 'spaceoutvr_django.urls'
@@ -128,7 +128,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
-AUTH_USER_MODEL = 'spaceoutvr.SpaceoutUser'
+
 SENTRY_CLIENT = 'user_management.utils.sentry.SensitiveDjangoClient'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -136,5 +136,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'agustinabreu@gmail.com'
 EMAIL_HOST_PASSWORD = '$pac30utVR'
-# EMAIL_HOST_PASSWORD = 'G0rri0nV3ntanaT3rmo'
 EMAIL_PORT = 587
+DEFAULT_EMAIL_BCC = ''
+DEFAULT_EMAIL_FROM = ''

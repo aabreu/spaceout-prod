@@ -1,6 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from user_management.models.mixins import VerifyEmailMixin
+from django.db import models
+from authemail.models import EmailUserManager, EmailAbstractUser
 
-
-class SpaceoutUser(VerifyEmailMixin, PermissionsMixin, AbstractBaseUser):
-    pass
+class SpaceoutUser(EmailAbstractUser):
+    # Required
+    objects = EmailUserManager()
