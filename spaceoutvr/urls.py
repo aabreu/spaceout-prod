@@ -2,7 +2,7 @@ from django.conf.urls import url
 from spaceoutvr import views
 
 urlpatterns = [
-        url(r'^landing/$', views.LandingView.as_view(), name='landing_page'),
+    url(r'^landing/$', views.LandingView.as_view(), name='landing_page'),
 
     url(r'^signup/$', views.SignupView.as_view(), name='signup_page'),
     url(r'^signup/email_sent/$', views.SignupEmailSentView.as_view(),
@@ -34,4 +34,5 @@ urlpatterns = [
 
     url(r'^password/change/$', views.PasswordChangeView.as_view(),
         name='password_change_page'),
+
         ]
