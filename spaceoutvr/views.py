@@ -9,8 +9,18 @@ from django.views.generic.edit import FormView
 
 from authemail import wrapper
 
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
+
+from spaceoutvr.serializers import SpaceoutUserSerializer
+from spaceoutvr.models import SpaceoutUser
+
 
 import hashlib
 
@@ -218,3 +228,59 @@ class PasswordChangeView(FormView):
 
     def get_success_url(self):
         return reverse('home_page')
+
+class UpdateProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        user = request.user
+
+        for key in request.data:
+            if key == 'facebook_id':
+                user.facebook_id = request.data['facebook_id']
+            if key == 'reddit_id':
+                user.reddit_id = request.data['reddit_id']
+            if key == 'soundcloud_id':
+                user.soundcloud_id = request.data['soundcloud_id']
+            if key == 'soundcloud_id':
+                user.twitter_id = request.data['twitter_id']
+            if key == 'notification_id':
+                user.notification_id = request.data['notification_id']
+            if key == 'latitude':
+                user.notification_id = request.data['latitude']
+            if key == 'longitude':
+                user.notification_id = request.data['longitude']
+
+        user.save()
+
+        return Response()
+
+class GetProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = SpaceoutUserSerializer
+
+    def post(self, request, format=None):
+        return Response(self.serializer_class(request.user).data)
+
+class GetFriendsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+
+        for key in request.data:
+            print(key)
+            if key == 'ids':
+                ids = request.data['ids']
+            if key == 'social':
+                social = request.data['social']
+
+        for friend in ids:
+            print(friend)
+
+        friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
+
+        for friend in friends:
+            print(friend)
+
+
+        return Response()

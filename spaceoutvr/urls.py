@@ -2,6 +2,10 @@ from django.conf.urls import url
 from spaceoutvr import views
 
 urlpatterns = [
+    url(r'^api/accounts/me/$', views.GetProfileView.as_view(), name='me'),
+    url(r'^api/accounts/update_profile/$', views.UpdateProfileView.as_view(), name='update_profile'),
+    url(r'^api/accounts/get_friends/$', views.GetFriendsView.as_view(), name='get_contacts'),
+
     url(r'^landing/$', views.LandingView.as_view(), name='landing_page'),
 
     url(r'^signup/$', views.SignupView.as_view(), name='signup_page'),

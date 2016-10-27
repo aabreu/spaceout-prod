@@ -11,10 +11,8 @@ class SpaceoutUserAdmin(EmailUserAdmin):
                                        'is_superuser', 'is_verified',
                                        'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        ('SpaceoutVR', {'fields': ('phone_number', 'latitude', 'longitude', 'notification_id', 'facebook_id', 'twitter_id', 'soundcloud_id', 'reddit_id')}),
     )
-
-class SpaceoutProfileAdmin(admin.ModelAdmin):
-    list_display = ['user','phone_number','latitude','longitude','notification_id']
 
 class SpaceoutRoomAdmin(admin.ModelAdmin):
     list_display = ('type','user')
@@ -25,6 +23,5 @@ class SpaceoutContentAdmin(admin.ModelAdmin):
 
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), SpaceoutUserAdmin)
-admin.site.register(SpaceoutProfile, SpaceoutProfileAdmin)
 admin.site.register(SpaceoutRoom, SpaceoutRoomAdmin)
 admin.site.register(SpaceoutContent, SpaceoutContentAdmin)
