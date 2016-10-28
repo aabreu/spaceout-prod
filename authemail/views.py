@@ -62,7 +62,7 @@ class Signup(APIView):
 
             if must_validate_email:
                 # Create and associate signup code
-                ipaddr = self.request.META.get('REMOTE_ADDR', '0.0.0.0')
+                ipaddr = self.request.META.get('HTTP_X_FORWARDED_FOR', '0.0.0.0')
                 signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
                 signup_code.send_signup_email()
 
