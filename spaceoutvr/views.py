@@ -304,3 +304,9 @@ class ProfileView(APIView):
         user.save()
 
         return Response()
+
+
+class DebugView(APIView):
+    def get(self, request, format=None):
+        result = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
+        return HttpResponse(result)
