@@ -22,7 +22,7 @@ from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer
-from spaceoutvr.models import SpaceoutUser
+from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent
 
 
 import hashlib
@@ -247,10 +247,17 @@ class RoomView(APIView):
 
     def post(self, request, format=None):
         user = request.user
+        if user.spaceoutroom_set.count() == 0:
+            room = SpaceoutRoom.objects.create()
+            room.type = SpaceoutRoom.ROOM_TYPE_HOME
+            user.spaceoutroom_set.add(room)
+            user.save()
+            room.save()
 
-        print(user)
-        print(user.room)
+        room = user.spaceoutroom_set.all()[0]
 
+        result = {}
+        return JsonResponse(result)
 
 class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -263,7 +270,7 @@ class FriendsView(APIView):
             if key == 'social':
                 social = request.data['social']
 
-        friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
+        friends = SpaceoutUser.objects.all().filter(facebook_id__in=ids)
 
         result = {}
         result['social'] = social

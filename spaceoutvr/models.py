@@ -26,7 +26,7 @@ class SpaceoutRoom(models.Model):
 
     type = models.IntegerField(default=0, choices=ROOM_TYPES)
     user = models.ForeignKey(
-        'SpaceoutUser',
+        SpaceoutUser,
         on_delete = models.CASCADE,
     )
 
@@ -54,6 +54,6 @@ class SpaceoutContent(models.Model):
     query = models.CharField(max_length=256)
     url = models.CharField(max_length=256)
     room = models.ForeignKey(
-        'SpaceoutRoom',
+        SpaceoutRoom,
         on_delete = models.CASCADE,
     )
