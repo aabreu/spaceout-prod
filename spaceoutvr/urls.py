@@ -3,7 +3,7 @@ from spaceoutvr import views
 
 urlpatterns = [
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
-    url(r'^api/accounts/get_friends/$', views.GetFriendsView.as_view(), name='get_contacts'),
+    url(r'^api/accounts/friends/$', views.FriendsView.as_view(), name='get_contacts'),
 
     # url(r'^landing/$', views.LandingView.as_view(), name='landing_page'),
     #

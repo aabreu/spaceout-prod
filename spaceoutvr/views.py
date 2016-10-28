@@ -1,8 +1,10 @@
 from django.core.urlresolvers import reverse
+from django.core import serializers
 from django.forms.utils import ErrorList
 from django.forms.forms import NON_FIELD_ERRORS
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
@@ -39,7 +41,7 @@ class SignupView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.signup(first_name=first_name, last_name=last_name,
             email=email, password=password)
 
@@ -63,7 +65,7 @@ class SignupVerifyView(View):
         code = request.GET.get('code', '')
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
 
         response = account.signup_verify(code=code)
 
@@ -91,7 +93,7 @@ class LoginView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.login(email=email, password=password)
 
         if 'token' in response:
@@ -117,7 +119,7 @@ class HomeView(TemplateView):
         token = self.request.session['auth_token']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.users_me(token=token)
 
         context['email'] = response['email']
@@ -130,7 +132,7 @@ class LogoutView(View):
         token = self.request.session['auth_token']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.logout(token=token)
 
         self.request.session.flush()
@@ -146,7 +148,7 @@ class PasswordResetView(FormView):
         email = form.cleaned_data['email']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.password_reset(email=email)
 
         # Handle other error responses from API
@@ -169,7 +171,7 @@ class PasswordResetVerifyView(View):
         code = request.GET.get('code', '')
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.password_reset_verify(code=code)
 
         # Handle other error responses from API
@@ -195,7 +197,7 @@ class PasswordResetVerifiedView(FormView):
         encryptedPassword = m.hexdigest()
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.password_reset_verified(code=code, password=encryptedPassword)
 
         # Handle other error responses from API
@@ -226,7 +228,7 @@ class PasswordChangeView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
-        account.base_uri = "https://spaceoutvr.mybluemix.net/api"
+        account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.password_change(token=token, password=password)
 
         # Handle other error responses from API
@@ -239,13 +241,12 @@ class PasswordChangeView(FormView):
     def get_success_url(self):
         return reverse('home_page')
 
-class GetFriendsView(APIView):
+class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
 
         for key in request.data:
-            print(key)
             if key == 'ids':
                 ids = request.data['ids']
             if key == 'social':
@@ -256,12 +257,11 @@ class GetFriendsView(APIView):
 
         friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
 
-        for friend in friends:
-            print(friend)
+        result = {}
+        result['social'] = social
+        result['ids'] = serializers.serialize('json', friends, fields=('email', 'first_name', 'last_name'))
 
-
-        return Response()
-
+        return JsonResponse(result, safe=False)
 
 
 class ProfileView(APIView):

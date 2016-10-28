@@ -25,6 +25,11 @@ DEBUG = True
 IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
+SERVER_URL = 'https://spaceoutvr.mybluemix.net'
+
+if IS_LOCAL:
+    SERVER_URL = 'http://127.0.0.1:8000'
+
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
 
 # ACCOUNT_EMAIL_UNIQUE = True
@@ -63,11 +68,6 @@ MIDDLEWARE_CLASSES = (
     # 'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-
-# TEMPLATE_CONTEXT_PROCESSORS = [
-#     'django.contrib.auth.context_processors.auth',
-#     'django.core.context_processors.request',
-# ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
