@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.forms.utils import ErrorList
@@ -240,6 +241,16 @@ class PasswordChangeView(FormView):
 
     def get_success_url(self):
         return reverse('home_page')
+
+class RoomView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        user = request.user
+
+        print(user)
+        print(user.room)
+
 
 class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
