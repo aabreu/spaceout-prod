@@ -61,6 +61,7 @@ class SignupVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
 
+        wrapper.base_uri = "https://spaceoutvr.mybluemix.net"
         account = wrapper.Authemail()
         response = account.signup_verify(code=code)
 
@@ -161,6 +162,7 @@ class PasswordResetVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
 
+        wrapper.base_uri = "https://spaceoutvr.mybluemix.net"
         account = wrapper.Authemail()
         response = account.password_reset_verify(code=code)
 
