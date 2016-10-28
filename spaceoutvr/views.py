@@ -263,14 +263,14 @@ class FriendsView(APIView):
             if key == 'social':
                 social = request.data['social']
 
-        for friend in ids:
-            print(friend)
-
         friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
 
         result = {}
         result['social'] = social
-        result['ids'] = serializers.serialize('json', friends, fields=('email', 'first_name', 'last_name'))
+        result['ids'] = []
+
+        for friend in ids:
+            result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
 
         return JsonResponse(result, safe=False)
 
@@ -308,5 +308,12 @@ class ProfileView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        result = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
-        return HttpResponse(result)
+        result = {}
+        result['ids'] = []
+
+        people = SpaceoutUser.objects.all()
+        for friend in people:
+            result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
+
+        # result['ids'] = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
+        return JsonResponse(result)
