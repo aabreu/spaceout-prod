@@ -255,15 +255,12 @@ class UpdateProfileView(APIView):
 
         return Response()
 
-class GetProfileView(APIView):
+class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = SpaceoutUserSerializer
 
-    def post(self, request, format=None):
+    def get(self, request, format=None):
         return Response(self.serializer_class(request.user).data)
-
-class GetFriendsView(APIView):
-    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
