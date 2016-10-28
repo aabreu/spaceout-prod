@@ -269,7 +269,7 @@ class FriendsView(APIView):
         result['social'] = social
         result['ids'] = []
 
-        for friend in ids:
+        for friend in friends:
             result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
 
         return JsonResponse(result, safe=False)
