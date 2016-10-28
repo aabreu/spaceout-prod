@@ -229,8 +229,37 @@ class PasswordChangeView(FormView):
     def get_success_url(self):
         return reverse('home_page')
 
-class UpdateProfileView(APIView):
+class GetFriendsView(APIView):
     permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+
+        for key in request.data:
+            print(key)
+            if key == 'ids':
+                ids = request.data['ids']
+            if key == 'social':
+                social = request.data['social']
+
+        for friend in ids:
+            print(friend)
+
+        friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
+
+        for friend in friends:
+            print(friend)
+
+
+        return Response()
+
+
+
+class ProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = SpaceoutUserSerializer
+
+    def get(self, request, format=None):
+        return Response(self.serializer_class(request.user).data)
 
     def post(self, request, format=None):
         user = request.user
@@ -252,32 +281,5 @@ class UpdateProfileView(APIView):
                 user.notification_id = request.data['longitude']
 
         user.save()
-
-        return Response()
-
-class ProfileView(APIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = SpaceoutUserSerializer
-
-    def get(self, request, format=None):
-        return Response(self.serializer_class(request.user).data)
-
-    def post(self, request, format=None):
-
-        for key in request.data:
-            print(key)
-            if key == 'ids':
-                ids = request.data['ids']
-            if key == 'social':
-                social = request.data['social']
-
-        for friend in ids:
-            print(friend)
-
-        friends = SpaceoutUser.objects.filter(facebook_id__in=ids)
-
-        for friend in friends:
-            print(friend)
-
 
         return Response()
