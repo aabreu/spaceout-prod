@@ -1,5 +1,5 @@
 ---
 applications:
-- name: SpaceoutVR
+- name: spaceoutvr
   services:
-  - mysql
+  - ClearDB MySQL Database-u3
