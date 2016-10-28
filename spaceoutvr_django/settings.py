@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-IS_LOCAL = True
+IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
