@@ -39,6 +39,7 @@ class SignupView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.signup(first_name=first_name, last_name=last_name,
             email=email, password=password)
 
@@ -61,8 +62,9 @@ class SignupVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
 
-        wrapper.base_uri = "https://spaceoutvr.mybluemix.net"
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
+
         response = account.signup_verify(code=code)
 
         # Handle other error responses from API
@@ -89,6 +91,7 @@ class LoginView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.login(email=email, password=password)
 
         if 'token' in response:
@@ -114,6 +117,7 @@ class HomeView(TemplateView):
         token = self.request.session['auth_token']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.users_me(token=token)
 
         context['email'] = response['email']
@@ -126,6 +130,7 @@ class LogoutView(View):
         token = self.request.session['auth_token']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.logout(token=token)
 
         self.request.session.flush()
@@ -141,6 +146,7 @@ class PasswordResetView(FormView):
         email = form.cleaned_data['email']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.password_reset(email=email)
 
         # Handle other error responses from API
@@ -162,8 +168,8 @@ class PasswordResetVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
 
-        wrapper.base_uri = "https://spaceoutvr.mybluemix.net"
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.password_reset_verify(code=code)
 
         # Handle other error responses from API
@@ -189,6 +195,7 @@ class PasswordResetVerifiedView(FormView):
         encryptedPassword = m.hexdigest()
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.password_reset_verified(code=code, password=encryptedPassword)
 
         # Handle other error responses from API
@@ -219,6 +226,7 @@ class PasswordChangeView(FormView):
         password = form.cleaned_data['password']
 
         account = wrapper.Authemail()
+        account.base_uri = "https://spaceoutvr.mybluemix.net"
         response = account.password_change(token=token, password=password)
 
         # Handle other error responses from API
