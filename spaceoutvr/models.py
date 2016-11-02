@@ -25,15 +25,18 @@ class SpaceoutRoom(models.Model):
     )
 
     type = models.IntegerField(default=0, choices=ROOM_TYPES)
+    capacity = models.IntegerField(default=14)
     user = models.ForeignKey(
         SpaceoutUser,
         on_delete = models.CASCADE,
     )
 
 class SpaceoutContent(models.Model):
-    CONTENT_TYPE_IMAGE = 0
-    CONTENT_TYPE_VIDEO = 1
+    CONTENT_TYPE_GIF = 0
+    CONTENT_TYPE_IMAGE = 1
+    CONTENT_TYPE_VIDEO = 2
     CONTENT_TYPES = (
+     (CONTENT_TYPE_GIF, 'Gif'),
      (CONTENT_TYPE_IMAGE, 'Image'),
      (CONTENT_TYPE_VIDEO, 'Video'),
     )
@@ -50,6 +53,7 @@ class SpaceoutContent(models.Model):
     )
 
     type = models.IntegerField(default=0, choices=CONTENT_TYPES)
+    idx = models.IntegerField(default=0)
     source = models.IntegerField(default=0, choices=SOURCE_TYPES)
     query = models.CharField(max_length=256)
     url = models.CharField(max_length=256)

@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent
 
 
@@ -245,19 +245,49 @@ class PasswordChangeView(FormView):
 class RoomView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    def get(self, request, format=None):
+        for key in request.data:
+            if key == 'user_id':
+                user = SpaceoutUser.objects.get(id=request.data['user_id'])
+                room = user.spaceoutroom_set.first()
+                return Response(SpaceoutRoomSerializer(room).data)
+
+        return Response(status=status.HTTP_404)
+
     def post(self, request, format=None):
         user = request.user
         if user.spaceoutroom_set.count() == 0:
-            room = SpaceoutRoom.objects.create()
+            room = SpaceoutRoom(user_id=user.id)
             room.type = SpaceoutRoom.ROOM_TYPE_HOME
-            user.spaceoutroom_set.add(room)
-            user.save()
+            # user.spaceoutroom_set.add(room)
+            # user.save()
             room.save()
 
         room = user.spaceoutroom_set.all()[0]
+        for key in request.data:
+            print key
+            if key == 'spaceoutcontent_set':
+                content = request.data['spaceoutcontent_set']
+                room.spaceoutcontent_set.all().delete()
+                for c in content:
+                    print('------')
 
-        result = {}
-        return JsonResponse(result)
+                    for k in c:
+                        print(k)
+                        print(c[k])
+
+                    contentModel = SpaceoutContent(room_id=room.id)
+                    contentModel.url = c['url']
+                    contentModel.type = c['type']
+                    contentModel.source = c['source']
+                    contentModel.query = c['query']
+                    contentModel.idx = c['idx']
+                    contentModel.save()
+
+                    room.spaceoutcontent_set.add(contentModel)
+
+        room.save()
+        return Response(status=status.HTTP_200_OK)
 
 class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -270,6 +300,10 @@ class FriendsView(APIView):
             if key == 'social':
                 social = request.data['social']
 
+
+        for i in ids:
+            print(i)
+
         friends = SpaceoutUser.objects.all().filter(facebook_id__in=ids)
 
         result = {}
@@ -277,6 +311,7 @@ class FriendsView(APIView):
         result['ids'] = []
 
         for friend in friends:
+            print friend.email
             result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
 
         return JsonResponse(result, safe=False)
@@ -315,12 +350,18 @@ class ProfileView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        result = {}
-        result['ids'] = []
+        # users = SpaceoutUser.objects.all()
+        # return Response(SpaceoutUserSerializer(users, many=True).data)
 
-        people = SpaceoutUser.objects.all()
-        for friend in people:
-            result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
+        rooms = SpaceoutRoom.objects.all()
+        return Response(SpaceoutRoomSerializer(rooms, many=True).data)
 
-        # result['ids'] = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
-        return JsonResponse(result)
+        # result = {}
+        # result['ids'] = []
+        #
+        # people = SpaceoutUser.objects.all()
+        # for friend in people:
+        #     result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
+        #
+        # # result['ids'] = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
+        # return JsonResponse(result)

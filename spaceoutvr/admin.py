@@ -18,7 +18,7 @@ class SpaceoutRoomAdmin(admin.ModelAdmin):
     list_display = ('type','user')
 
 class SpaceoutContentAdmin(admin.ModelAdmin):
-    list_display = ('type','source','query','url')
+    list_display = ('idx','type','source','query','url')
 
 
 admin.site.unregister(get_user_model())
