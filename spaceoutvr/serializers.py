@@ -16,6 +16,7 @@ class SpaceoutRoomSerializer(serializers.ModelSerializer):
         # depth = 2
 
 class SpaceoutUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
     reddit_id = serializers.CharField()

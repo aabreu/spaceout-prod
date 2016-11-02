@@ -250,7 +250,10 @@ class RoomView(APIView):
             if key == 'user_id':
                 user = SpaceoutUser.objects.get(id=request.data['user_id'])
                 room = user.spaceoutroom_set.first()
-                return Response(SpaceoutRoomSerializer(room).data)
+                if room == None:
+                    return Response()
+                else:
+                    return Response(SpaceoutRoomSerializer(room).data)
 
         return Response(status=status.HTTP_404)
 
@@ -265,17 +268,10 @@ class RoomView(APIView):
 
         room = user.spaceoutroom_set.all()[0]
         for key in request.data:
-            print key
             if key == 'spaceoutcontent_set':
                 content = request.data['spaceoutcontent_set']
                 room.spaceoutcontent_set.all().delete()
                 for c in content:
-                    print('------')
-
-                    for k in c:
-                        print(k)
-                        print(c[k])
-
                     contentModel = SpaceoutContent(room_id=room.id)
                     contentModel.url = c['url']
                     contentModel.type = c['type']
@@ -300,21 +296,8 @@ class FriendsView(APIView):
             if key == 'social':
                 social = request.data['social']
 
-
-        for i in ids:
-            print(i)
-
         friends = SpaceoutUser.objects.all().filter(facebook_id__in=ids)
-
-        result = {}
-        result['social'] = social
-        result['ids'] = []
-
-        for friend in friends:
-            print friend.email
-            result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
-
-        return JsonResponse(result, safe=False)
+        return Response(SpaceoutUserSerializer(friends, many=True).data)
 
 
 class ProfileView(APIView):
@@ -353,15 +336,12 @@ class DebugView(APIView):
         # users = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(users, many=True).data)
 
-        rooms = SpaceoutRoom.objects.all()
-        return Response(SpaceoutRoomSerializer(rooms, many=True).data)
+        # rooms = SpaceoutRoom.objects.all()
+        # return Response(SpaceoutRoomSerializer(rooms, many=True).data)
 
-        # result = {}
-        # result['ids'] = []
-        #
-        # people = SpaceoutUser.objects.all()
-        # for friend in people:
-        #     result['ids'].append({'email': friend.email, 'first_name': friend.first_name, 'last_name': friend.last_name, 'notification_id': friend.notification_id, 'facebook_id': friend.facebook_id})
-        #
-        # # result['ids'] = serializers.serialize('json', SpaceoutUser.objects.all(), fields=('email', 'first_name', 'last_name'))
-        # return JsonResponse(result)
+        user = SpaceoutUser.objects.get(id=3)
+        room = user.spaceoutroom_set.first()
+        if room == None:
+            return Response({'error':'si'})
+        else:
+            return Response(SpaceoutRoomSerializer(room).data)
