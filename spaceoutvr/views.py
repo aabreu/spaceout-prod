@@ -22,7 +22,7 @@ from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
-from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent
+from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition
 
 
 import hashlib
@@ -259,28 +259,38 @@ class RoomView(APIView):
 
     def post(self, request, format=None):
         user = request.user
+
+        # create the first room, if room is empty
         if user.spaceoutroom_set.count() == 0:
+            roomDefinition = SpaceoutRoomDefinition.objects.get(
+                type=SpaceoutRoomDefinition.ROOM_TYPE_HOME
+            )
             room = SpaceoutRoom(user_id=user.id)
-            room.type = SpaceoutRoom.ROOM_TYPE_HOME
-            # user.spaceoutroom_set.add(room)
-            # user.save()
+            room.definition = roomDefinition
             room.save()
 
         room = user.spaceoutroom_set.all()[0]
         for key in request.data:
             if key == 'spaceoutcontent_set':
                 content = request.data['spaceoutcontent_set']
-                room.spaceoutcontent_set.all().delete()
+                # room.spaceoutcontent_set.all().delete()
                 for c in content:
-                    contentModel = SpaceoutContent(room_id=room.id)
+                    # try to get a content room by ids
+                    try:
+                        contentModel = SpaceoutContent.objects.get(
+                            room_id = room.id,
+                            idx = c['idx'],
+                        )
+                    except:
+                        contentModel = SpaceoutContent(room_id=room.id)
+                        room.spaceoutcontent_set.add(contentModel)
+
                     contentModel.url = c['url']
                     contentModel.type = c['type']
                     contentModel.source = c['source']
                     contentModel.query = c['query']
                     contentModel.idx = c['idx']
                     contentModel.save()
-
-                    room.spaceoutcontent_set.add(contentModel)
 
         room.save()
         return Response(status=status.HTTP_200_OK)
@@ -333,15 +343,15 @@ class ProfileView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        # users = SpaceoutUser.objects.all()
-        # return Response(SpaceoutUserSerializer(users, many=True).data)
+        users = SpaceoutUser.objects.all()
+        return Response(SpaceoutUserSerializer(users, many=True).data)
 
         # rooms = SpaceoutRoom.objects.all()
         # return Response(SpaceoutRoomSerializer(rooms, many=True).data)
 
-        user = SpaceoutUser.objects.get(id=3)
-        room = user.spaceoutroom_set.first()
-        if room == None:
-            return Response({'error':'si'})
-        else:
-            return Response(SpaceoutRoomSerializer(room).data)
+        # user = SpaceoutUser.objects.get(id=3)
+        # room = user.spaceoutroom_set.first()
+        # if room == None:
+        #     return Response({'error':'si'})
+        # else:
+        #     return Response(SpaceoutRoomSerializer(room).data)

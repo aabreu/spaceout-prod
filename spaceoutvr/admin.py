@@ -15,13 +15,21 @@ class SpaceoutUserAdmin(EmailUserAdmin):
     )
 
 class SpaceoutRoomAdmin(admin.ModelAdmin):
-    list_display = ('type','user')
+    list_display = ['user']
+
+class SpaceoutRoomDefinitionAdmin(admin.ModelAdmin):
+    list_display = ('type', 'capacity')
 
 class SpaceoutContentAdmin(admin.ModelAdmin):
     list_display = ('idx','type','source','query','url')
+
+class SpaceoutCommentAdmin(admin.ModelAdmin):
+    list_display = ('url','author','content')
 
 
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), SpaceoutUserAdmin)
 admin.site.register(SpaceoutRoom, SpaceoutRoomAdmin)
+admin.site.register(SpaceoutRoomDefinition, SpaceoutRoomDefinitionAdmin)
 admin.site.register(SpaceoutContent, SpaceoutContentAdmin)
+admin.site.register(SpaceoutComment, SpaceoutCommentAdmin)

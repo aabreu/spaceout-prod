@@ -16,7 +16,7 @@ class SpaceoutUser(EmailAbstractUser):
     # Required
     objects = EmailUserManager()
 
-class SpaceoutRoom(models.Model):
+class SpaceoutRoomDefinition(models.Model):
     ROOM_TYPE_HOME = 0
     ROOM_TYPE_360 = 1
     ROOM_TYPES = (
@@ -26,9 +26,20 @@ class SpaceoutRoom(models.Model):
 
     type = models.IntegerField(default=0, choices=ROOM_TYPES)
     capacity = models.IntegerField(default=14)
+
+    def __unicode__(self):
+       return self.ROOM_TYPES[self.type][1]
+
+class SpaceoutRoom(models.Model):
     user = models.ForeignKey(
         SpaceoutUser,
         on_delete = models.CASCADE,
+    )
+
+    definition = models.ForeignKey(
+        SpaceoutRoomDefinition,
+        on_delete = models.CASCADE,
+        default = None,
     )
 
 class SpaceoutContent(models.Model):
@@ -59,5 +70,16 @@ class SpaceoutContent(models.Model):
     url = models.CharField(max_length=256)
     room = models.ForeignKey(
         SpaceoutRoom,
+        on_delete = models.CASCADE,
+    )
+
+class SpaceoutComment(models.Model):
+    url = models.CharField(max_length=256)
+    author = models.OneToOneField(
+        SpaceoutUser,
+        on_delete = models.CASCADE,
+    )
+    content = models.ForeignKey(
+        SpaceoutContent,
         on_delete = models.CASCADE,
     )
