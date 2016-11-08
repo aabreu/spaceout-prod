@@ -1,5 +1,0 @@
-- model: spaceoutvr.SpaceoutRoomDefinition
-  pk: 1
-  fields:
-    type: 0
-    capacity: 14
