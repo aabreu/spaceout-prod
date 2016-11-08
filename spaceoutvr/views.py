@@ -22,7 +22,7 @@ from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
-from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition
+from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 
 
 import hashlib
@@ -338,8 +338,21 @@ class ProfileView(APIView):
 
         user.save()
 
-        return Response()
+        return Response(status=status.HTTP_200_OK)
 
+class CommentView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        # author = request.user
+        author = SpaceoutUser.objects.get(id=1)
+        content = SpaceoutContent.objects.get(id=request.data['content_id'])
+        comment = SpaceoutComment(author=author, content=content)
+        # comment.url = request.data['url']
+        print(request.FILES['file'])
+        comment.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 class DebugView(APIView):
     def get(self, request, format=None):

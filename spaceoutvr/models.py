@@ -75,7 +75,7 @@ class SpaceoutContent(models.Model):
 
 class SpaceoutComment(models.Model):
     url = models.CharField(max_length=256)
-    author = models.OneToOneField(
+    author = models.ForeignKey(
         SpaceoutUser,
         on_delete = models.CASCADE,
     )
