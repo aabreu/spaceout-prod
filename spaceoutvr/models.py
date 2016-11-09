@@ -58,7 +58,7 @@ class SpaceoutContent(models.Model):
     SOURCE_TYPE_GOOGLE_IMAGE = 3
     SOURCE_TYPES = (
      (SOURCE_TYPE_GIPHY, 'Giphy'),
-     (SOURCE_TYPE_WIKI, 'Video'),
+     (SOURCE_TYPE_WIKI, 'Wiki'),
      (SOURCE_TYPE_YOUTUBE, 'Youtube'),
      (SOURCE_TYPE_GOOGLE_IMAGE, 'Google Images'),
     )
