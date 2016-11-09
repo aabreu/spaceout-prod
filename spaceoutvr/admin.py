@@ -21,7 +21,7 @@ class SpaceoutRoomDefinitionAdmin(admin.ModelAdmin):
     list_display = ('type', 'capacity')
 
 class SpaceoutContentAdmin(admin.ModelAdmin):
-    list_display = ('idx','type','source','query','url')
+    list_display = ('idx','type','source','query','admin_image')
 
 class SpaceoutCommentAdmin(admin.ModelAdmin):
     list_display = ('url','author','content')

@@ -73,6 +73,13 @@ class SpaceoutContent(models.Model):
         on_delete = models.CASCADE,
     )
 
+    def admin_image(self):
+        if self.type == self.CONTENT_TYPE_IMAGE:
+            return '<img src="%s" width=\'100\' height=\'100\'/>' % self.url
+        else:
+            return '<video src="%s" width=\'100\' height=\'100\'/>' % self.url
+    admin_image.allow_tags = True
+
 class SpaceoutComment(models.Model):
     url = models.CharField(max_length=256)
     author = models.ForeignKey(
