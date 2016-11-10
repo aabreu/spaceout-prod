@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.conf import settings
 from spaceoutvr import views
 
 urlpatterns = [
@@ -8,6 +9,9 @@ urlpatterns = [
     url(r'^api/accounts/comment/$', views.CommentView.as_view(), name='comment'),
     url(r'^api/accounts/debug/$', views.DebugView.as_view(), name='debug'),
 
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
     # url(r'^landing/$', views.LandingView.as_view(), name='landing_page'),
     #
     # url(r'^signup/$', views.SignupView.as_view(), name='signup_page'),

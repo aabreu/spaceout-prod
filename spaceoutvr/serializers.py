@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
+from django.conf import settings
 
 class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
@@ -20,11 +21,16 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
 
 
 class SpaceoutCommentSerializer(serializers.ModelSerializer):
+    def absolute_url(self, comment):
+        return settings.SERVER_URL + comment.audio_file.storage.url(comment.audio_file.name)
+
     author = SpaceoutUserSimpleSerializer()
+    url = serializers.SerializerMethodField('absolute_url')
     class Meta:
         model = SpaceoutComment
         fields = ('url', 'author')
         # depth = 1
+
 
 class SpaceoutContentSerializer(serializers.ModelSerializer):
     spaceoutcomment_set = SpaceoutCommentSerializer(many=True)

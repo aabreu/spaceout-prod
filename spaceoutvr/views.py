@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 
 
@@ -347,12 +347,13 @@ class CommentView(APIView):
         # author = request.user
         author = SpaceoutUser.objects.get(id=1)
         content = SpaceoutContent.objects.get(id=request.data['content_id'])
-        comment = SpaceoutComment(author=author, content=content)
-        # comment.url = request.data['url']
-        print(request.FILES['file'])
+        comment = SpaceoutComment(
+            author=author,
+            content=content,
+            audio_file=request.FILES['file'],
+        )
         comment.save()
-
-        return Response(status=status.HTTP_200_OK)
+        return Response(SpaceoutCommentSerializer(comment).data)
 
 class DebugView(APIView):
     def get(self, request, format=None):

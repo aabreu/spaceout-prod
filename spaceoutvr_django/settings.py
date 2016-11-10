@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-IS_LOCAL = False
+IS_LOCAL = True
 TEMPLATE_DEBUG = True
 
 SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
@@ -143,3 +143,20 @@ EMAIL_HOST_PASSWORD = 'Daydr3am10'
 EMAIL_PORT = 587
 DEFAULT_EMAIL_BCC = ''
 DEFAULT_EMAIL_FROM = ''
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers':['console'],
+            'propagate': True,
+            'level':'DEBUG',
+        }
+    },
+}

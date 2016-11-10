@@ -3,6 +3,9 @@ from django.db import models
 from authemail.models import EmailUserManager, EmailAbstractUser
 from spaceoutvr_django import settings
 
+import datetime
+
+
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
     latitude = models.CharField(max_length=30, default='')
@@ -80,8 +83,23 @@ class SpaceoutContent(models.Model):
             return '<video src="%s" width=\'100\' height=\'100\'/>' % self.url
     admin_image.allow_tags = True
 
+def comment_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    now = datetime.datetime.utcnow()
+    name = now.strftime("%H_%M_%S_%f")
+    return 'comments/{0}/{1}/{2}/{3}/{4}.wav'.format(
+        now.year,
+        now.month,
+        now.day,
+        instance.content.room.user.id,
+        name,
+    )
+
 class SpaceoutComment(models.Model):
+
     url = models.CharField(max_length=256)
+    audio_file = models.FileField(upload_to=comment_directory_path, default=None)
+
     author = models.ForeignKey(
         SpaceoutUser,
         on_delete = models.CASCADE,
