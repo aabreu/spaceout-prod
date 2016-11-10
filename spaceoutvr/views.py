@@ -341,11 +341,11 @@ class ProfileView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 class CommentView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        # author = request.user
-        author = SpaceoutUser.objects.get(id=1)
+        author = request.user
+        # author = SpaceoutUser.objects.get(id=1)
         content = SpaceoutContent.objects.get(id=request.data['content_id'])
         comment = SpaceoutComment(
             author=author,
@@ -356,15 +356,23 @@ class CommentView(APIView):
         return Response(SpaceoutCommentSerializer(comment).data)
 
     def delete(self, request, format=None):
-        author = SpaceoutUser.objects.get(id=1)
+        author = request.user
         comment = SpaceoutComment.objects.get(id=request.data['comment_id'])
         if author.id != comment.author.id:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        room_id = comment.content.room.id
+        content_id = comment.content.id
+        comment_id = comment.id
+
         # delete model
         comment.delete()
 
-        return Response({'comment_id':request.data['comment_id']})
+        return Response({
+            'comment_id':comment_id,
+            'content_id':content_id,
+            'room_id':room_id,
+        })
 
 class DebugView(APIView):
     def get(self, request, format=None):
