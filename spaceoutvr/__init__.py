@@ -1,1 +1,1 @@
-import signals
+import spaceoutvr.signals
