@@ -24,7 +24,7 @@ class SpaceoutContentAdmin(admin.ModelAdmin):
     list_display = ('idx','type','source','query','admin_image')
 
 class SpaceoutCommentAdmin(admin.ModelAdmin):
-    list_display = ('url','author','content')
+    list_display = ('author','content')
 
 
 admin.site.unregister(get_user_model())

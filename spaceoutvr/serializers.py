@@ -24,11 +24,15 @@ class SpaceoutCommentSerializer(serializers.ModelSerializer):
     def absolute_url(self, comment):
         return settings.SERVER_URL + comment.audio_file.storage.url(comment.audio_file.name)
 
+    def get_content_id(self, comment):
+        return comment.content.id
+
     author = SpaceoutUserSimpleSerializer()
     url = serializers.SerializerMethodField('absolute_url')
+    content_id = serializers.SerializerMethodField()
     class Meta:
         model = SpaceoutComment
-        fields = ('url', 'author')
+        fields = ('url', 'author', 'content_id')
         # depth = 1
 
 

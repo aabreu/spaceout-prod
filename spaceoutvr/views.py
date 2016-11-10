@@ -355,6 +355,17 @@ class CommentView(APIView):
         comment.save()
         return Response(SpaceoutCommentSerializer(comment).data)
 
+    def delete(self, request, format=None):
+        author = SpaceoutUser.objects.get(id=1)
+        comment = SpaceoutComment.objects.get(id=request.data['comment_id'])
+        if author.id != comment.author.id:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # delete model
+        comment.delete()
+
+        return Response({'comment_id':request.data['comment_id']})
+
 class DebugView(APIView):
     def get(self, request, format=None):
         users = SpaceoutUser.objects.all()
