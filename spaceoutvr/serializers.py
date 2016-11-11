@@ -28,7 +28,7 @@ class SpaceoutCommentSerializer(serializers.ModelSerializer):
         return comment.content.id
 
     def get_room_id(self, comment):
-        return comment.content.id
+        return comment.content.room.id
 
     author = SpaceoutUserSimpleSerializer()
     url = serializers.SerializerMethodField()
@@ -36,7 +36,7 @@ class SpaceoutCommentSerializer(serializers.ModelSerializer):
     room_id = serializers.SerializerMethodField()
     class Meta:
         model = SpaceoutComment
-        fields = ('url', 'author', 'content_id', 'room_id')
+        fields = ('id', 'url', 'author', 'content_id', 'room_id')
         # depth = 1
 
 
