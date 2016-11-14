@@ -1,5 +1,5 @@
 ---
 applications:
-- name: spaceoutvr
+- name: spaceoutvr-dev
   services:
-  - ClearDB MySQL Database Production
+  - ClearDB MySQL Database Dev

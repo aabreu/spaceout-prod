@@ -25,8 +25,8 @@ DEBUG = True
 IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
-# SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
-SERVER_URL = 'https://spaceoutvr.mybluemix.net'
+SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
+# SERVER_URL = 'https://spaceoutvr.mybluemix.net'
 
 if IS_LOCAL:
     # SERVER_URL = 'http://192.168.0.109:8000'
