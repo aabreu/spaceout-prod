@@ -2,4 +2,4 @@
 applications:
 - name: spaceoutvr-dev
   services:
-  - ClearDB MySQL Database Dev
+  - ClearDB MySQL Database Development
