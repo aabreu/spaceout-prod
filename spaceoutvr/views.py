@@ -23,7 +23,7 @@ from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
-
+from spaceoutvr.storage import IBMObjectStorage
 
 import hashlib
 
@@ -376,8 +376,30 @@ class CommentView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        users = SpaceoutUser.objects.all()
-        return Response(SpaceoutUserSerializer(users, many=True).data)
+        rooms = SpaceoutRoom.objects.all()
+        return Response(SpaceoutRoomSerializer(rooms, many=True).data)
+
+        # storage = IBMObjectStorage()
+        # storage.exists("lalala")
+        # return Response(status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        author = SpaceoutUser.objects.get(id=1)
+        content = SpaceoutContent.objects.get(id=1)
+        comment = SpaceoutComment(
+            author=author,
+            content=content,
+            audio_file=request.FILES['file'],
+        )
+        comment.save()
+        return Response(SpaceoutCommentSerializer(comment).data)
+
+        # storage = IBMObjectStorage()
+        # storage.get_token()
+        # return Response(status=status.HTTP_200_OK)
+
+        # users = SpaceoutUser.objects.all()
+        # return Response(SpaceoutUserSerializer(users, many=True).data)
 
         # rooms = SpaceoutRoom.objects.all()
         # return Response(SpaceoutRoomSerializer(rooms, many=True).data)

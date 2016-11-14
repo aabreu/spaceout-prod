@@ -22,7 +22,7 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
 
 class SpaceoutCommentSerializer(serializers.ModelSerializer):
     def get_url(self, comment):
-        return settings.SERVER_URL + comment.audio_file.storage.url(comment.audio_file.name)
+        return comment.audio_file.storage.url(comment.audio_file.name)
 
     def get_content_id(self, comment):
         return comment.content.id

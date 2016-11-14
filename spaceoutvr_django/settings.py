@@ -130,8 +130,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
 
 SENTRY_CLIENT = 'user_management.utils.sentry.SensitiveDjangoClient'
 
@@ -160,3 +160,11 @@ LOGGING = {
         }
     },
 }
+
+OBJECT_STORAGE_PROJECT_ID = '000d40f501d24442a0e152e3d285a79d'
+OBJECT_STORAGE_USER_ID = '0b288ba024754160b0e904842fe32ce8'
+OBJECT_STORAGE_PASSWORD = 'it-kDXeduV5x]0gP'
+OBJECT_STORAGE_CONTAINER = 'content-dev'
+
+if(IS_LOCAL):
+    OBJECT_STORAGE_CONTAINER = 'content-local'
