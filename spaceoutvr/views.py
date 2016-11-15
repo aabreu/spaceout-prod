@@ -309,6 +309,23 @@ class FriendsView(APIView):
         friends = SpaceoutUser.objects.all().filter(facebook_id__in=ids)
         return Response(SpaceoutUserSerializer(friends, many=True).data)
 
+class ContentView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        user = request.user
+        c = request.data
+        content = SpaceoutContent.objects.get(id=c['id'])
+        if user.id == content.room.user.id:
+            content.url = c['url']
+            content.type = c['type']
+            content.source = c['source']
+            content.query = c['query']
+            content.idx = c['idx']
+            content.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
