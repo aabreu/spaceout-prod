@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 from spaceoutvr.storage import IBMObjectStorage
 
