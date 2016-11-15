@@ -325,7 +325,7 @@ class ContentView(APIView):
             content.weight = c['weight']
             content.idx = c['idx']
             content.save()
-            return Response(status=status.HTTP_200_OK)
+            return Response(SpaceoutContentSerializer(content).data)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
