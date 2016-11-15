@@ -71,6 +71,7 @@ class SpaceoutContent(models.Model):
     idx = models.IntegerField(default=0)
     source = models.IntegerField(default=0, choices=SOURCE_TYPES)
     query = models.CharField(max_length=256)
+    weight = models.FloatField(default=0)
     url = models.CharField(max_length=256)
     room = models.ForeignKey(
         SpaceoutRoom,

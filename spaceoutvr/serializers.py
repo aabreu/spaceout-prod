@@ -44,7 +44,7 @@ class SpaceoutContentSerializer(serializers.ModelSerializer):
     spaceoutcomment_set = SpaceoutCommentSerializer(many=True)
     class Meta:
         model = SpaceoutContent
-        fields = ('id', 'type', 'url', 'source', 'query', 'idx', 'spaceoutcomment_set')
+        fields = ('id', 'type', 'url', 'source', 'query', 'weight', 'idx', 'spaceoutcomment_set')
         # depth = 2
 
 class SpaceoutRoomDefinitionSerializer(serializers.ModelSerializer):

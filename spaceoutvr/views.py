@@ -289,6 +289,7 @@ class RoomView(APIView):
                     contentModel.type = c['type']
                     contentModel.source = c['source']
                     contentModel.query = c['query']
+                    contentModel.weight = c['weight']
                     contentModel.idx = c['idx']
                     contentModel.save()
 
@@ -321,6 +322,7 @@ class ContentView(APIView):
             content.type = c['type']
             content.source = c['source']
             content.query = c['query']
+            content.weight = c['weight']
             content.idx = c['idx']
             content.save()
             return Response(status=status.HTTP_200_OK)
