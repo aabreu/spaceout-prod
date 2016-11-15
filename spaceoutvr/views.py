@@ -293,7 +293,7 @@ class RoomView(APIView):
                     contentModel.save()
 
         room.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(SpaceoutRoomSerializer(room).data)
 
 class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
