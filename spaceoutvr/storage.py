@@ -14,9 +14,8 @@ class IBMObjectStorage(Storage):
     # https://<access point>/<API version>/AUTH_<project ID>/<container namespace>/<object namespace>
 
     def __init__(self, option=None):
-        pass
-        # self.token = self.get_token()
-        # self.config_container()
+        self.token = self.get_token()
+        self.config_container()
 
     def _open(self, name, mode='rb'):
         assert mode == 'rb', "You've tried to open binary file without specifying binary mode! You specified: %s"%mode
