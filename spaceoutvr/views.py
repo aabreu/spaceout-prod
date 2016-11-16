@@ -354,6 +354,8 @@ class ProfileView(APIView):
                 user.notification_id = request.data['latitude']
             if key == 'longitude':
                 user.notification_id = request.data['longitude']
+            if key == 'personality_insights':
+                user.personality_insights = request.data['personality_insights']
 
         user.save()
 
@@ -395,8 +397,11 @@ class CommentView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        rooms = SpaceoutRoom.objects.all()
-        return Response(SpaceoutRoomSerializer(rooms, many=True).data)
+        user = SpaceoutUser.objects.all()
+        return Response(SpaceoutUserSerializer(user, many=True).data)
+
+        # rooms = SpaceoutRoom.objects.all()
+        # return Response(SpaceoutRoomSerializer(rooms, many=True).data)
 
         # storage = IBMObjectStorage()
         # storage.exists("lalala")

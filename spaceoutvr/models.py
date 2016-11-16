@@ -11,6 +11,7 @@ class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
     latitude = models.CharField(max_length=30, default='')
     longitude = models.CharField(max_length=30, default='')
+    personality_insights = models.TextField(default='')
     notification_id = models.CharField(max_length=256, default='')
     facebook_id = models.CharField(max_length=128, default='')
     reddit_id = models.CharField(max_length=128, default='')

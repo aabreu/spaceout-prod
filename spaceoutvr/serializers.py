@@ -68,10 +68,11 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     latitude = serializers.CharField()
     longitude = serializers.CharField()
     notification_id = serializers.CharField()
+    personality_insights = serializers.CharField();
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
-        fields = ('id', 'latitude', 'longitude', 'notification_id',
+        fields = ('id', 'latitude', 'longitude', 'personality_insights', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id',
                   'spaceoutroom_set')
 
