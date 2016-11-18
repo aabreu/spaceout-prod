@@ -249,9 +249,12 @@ class RoomView(APIView):
         try:
             user = SpaceoutUser.objects.get(id=request.data['user_id'])
             room = user.spaceoutroom_set.first()
+            if room == None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
             return Response(SpaceoutRoomSerializer(room).data)
         except:
-            return Response(status=status.HTTP_404)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, format=None):
         user = request.user
@@ -265,29 +268,27 @@ class RoomView(APIView):
             room.definition = roomDefinition
             room.save()
 
-        room = user.spaceoutroom_set.all()[0]
-        for key in request.data:
-            if key == 'spaceoutcontent_set':
-                content = request.data['spaceoutcontent_set']
-                # room.spaceoutcontent_set.all().delete()
-                for c in content:
-                    # try to get a content room by ids
-                    try:
-                        contentModel = SpaceoutContent.objects.get(
-                            room_id = room.id,
-                            idx = c['idx'],
-                        )
-                    except:
-                        contentModel = SpaceoutContent(room_id=room.id)
-                        room.spaceoutcontent_set.add(contentModel)
+        room = user.spaceoutroom_set.first()
+        content = request.data['spaceoutcontent_set']
+        # room.spaceoutcontent_set.all().delete()
+        for c in content:
+            # try to get a content room by ids
+            try:
+                contentModel = SpaceoutContent.objects.get(
+                    room_id = room.id,
+                    idx = c['idx'],
+                )
+            except:
+                contentModel = SpaceoutContent(room_id=room.id)
+                room.spaceoutcontent_set.add(contentModel)
 
-                    contentModel.url = c['url']
-                    contentModel.type = c['type']
-                    contentModel.source = c['source']
-                    contentModel.query = c['query']
-                    contentModel.weight = c['weight']
-                    contentModel.idx = c['idx']
-                    contentModel.save()
+            contentModel.url = c['url']
+            contentModel.type = c['type']
+            contentModel.source = c['source']
+            contentModel.query = c['query']
+            contentModel.weight = c['weight']
+            contentModel.idx = c['idx']
+            contentModel.save()
 
         room.save()
         return Response(SpaceoutRoomSerializer(room).data)
@@ -343,12 +344,12 @@ class ProfileView(APIView):
                 user.soundcloud_id = request.data['soundcloud_id']
             if key == 'soundcloud_id':
                 user.twitter_id = request.data['twitter_id']
-            if key == 'notification_id':
-                user.notification_id = request.data['notification_id']
+            if key == 'notifications_id':
+                user.notification_id = request.data['notifications_id']
             if key == 'latitude':
-                user.notification_id = request.data['latitude']
+                user.latitude = request.data['latitude']
             if key == 'longitude':
-                user.notification_id = request.data['longitude']
+                user.longitude = request.data['longitude']
             if key == 'personality_insights':
                 user.personality_insights = request.data['personality_insights']
             if key == 'first_name':
@@ -396,8 +397,15 @@ class CommentView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
-        user = SpaceoutUser.objects.all()
-        return Response(SpaceoutUserSerializer(user, many=True).data)
+        user = SpaceoutUser.objects.get(id=6)
+        room = user.spaceoutroom_set.first()
+
+        if room == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(SpaceoutRoomSerializer(room).data)
+        # user = SpaceoutUser.objects.all()
+        # return Response(SpaceoutUserSerializer(user, many=True).data)
 
         # rooms = SpaceoutRoom.objects.all()
         # return Response(SpaceoutRoomSerializer(rooms, many=True).data)

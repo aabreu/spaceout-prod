@@ -86,11 +86,11 @@ class SpaceoutContent(models.Model):
             return '<video src="%s" width=\'100\' height=\'100\'/>' % self.url
     admin_image.allow_tags = True
 
-    def get_subscription_list(self):
-        result = set()
-        for comment in self.comments:
-            result.Add(comment.author)
-        return result
+    # def get_subscription_list(self):
+    #     result = set()
+    #     for comment in self.comments:
+    #         result.Add(comment.author)
+    #     return result
 
 def comment_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
