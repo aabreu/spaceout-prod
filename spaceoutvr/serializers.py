@@ -5,6 +5,9 @@ from django.conf import settings
 
 class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.CharField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
     reddit_id = serializers.CharField()
@@ -14,7 +17,7 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     notification_id = serializers.CharField()
     class Meta:
         model = SpaceoutUser
-        fields = ('id', 'latitude', 'longitude', 'notification_id',
+        fields = ('id', 'email', 'first_name', 'last_name', 'latitude', 'longitude', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id')
 
     depth = 2
@@ -61,6 +64,9 @@ class SpaceoutRoomSerializer(serializers.ModelSerializer):
 
 class SpaceoutUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.CharField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
     reddit_id = serializers.CharField()
@@ -72,8 +78,8 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
-        fields = ('id', 'latitude', 'longitude', 'personality_insights', 'notification_id',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id',
+        fields = ('id', 'first_name', 'last_name', 'latitude', 'longitude', 'personality_insights', 'notification_id',
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
                   'spaceoutroom_set')
 
     depth = 2

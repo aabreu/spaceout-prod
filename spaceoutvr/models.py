@@ -7,6 +7,8 @@ from spaceoutvr.storage import IBMObjectStorage
 
 import datetime
 
+from sets import Set
+
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
     latitude = models.CharField(max_length=30, default='')
@@ -85,6 +87,12 @@ class SpaceoutContent(models.Model):
         else:
             return '<video src="%s" width=\'100\' height=\'100\'/>' % self.url
     admin_image.allow_tags = True
+
+    def get_subscription_list(self):
+        result = Set()
+        for comment in self.comments:
+            result.Add(comment.author)
+        return result
 
 def comment_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>

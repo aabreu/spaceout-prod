@@ -300,7 +300,6 @@ class FriendsView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-
         for key in request.data:
             if key == 'ids':
                 ids = request.data['ids']
@@ -356,6 +355,10 @@ class ProfileView(APIView):
                 user.notification_id = request.data['longitude']
             if key == 'personality_insights':
                 user.personality_insights = request.data['personality_insights']
+            if key == 'first_name':
+                user.first_name = request.data['first_name']
+            if key == 'last_name':
+                user.last_name = request.data['last_name']
 
         user.save()
 
