@@ -7,8 +7,6 @@ from spaceoutvr.storage import IBMObjectStorage
 
 import datetime
 
-from sets import Set
-
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
     latitude = models.CharField(max_length=30, default='')
@@ -89,7 +87,7 @@ class SpaceoutContent(models.Model):
     admin_image.allow_tags = True
 
     def get_subscription_list(self):
-        result = Set()
+        result = set()
         for comment in self.comments:
             result.Add(comment.author)
         return result
