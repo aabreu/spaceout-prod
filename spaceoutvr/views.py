@@ -246,16 +246,12 @@ class RoomView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        for key in request.data:
-            if key == 'user_id':
-                user = SpaceoutUser.objects.get(id=request.data['user_id'])
-                room = user.spaceoutroom_set.first()
-                if room == None:
-                    return Response()
-                else:
-                    return Response(SpaceoutRoomSerializer(room).data)
-
-        return Response(status=status.HTTP_404)
+        try:
+            user = SpaceoutUser.objects.get(id=request.data['user_id'])
+            room = user.spaceoutroom_set.first()
+            return Response(SpaceoutRoomSerializer(room).data)
+        except:
+            return Response(status=status.HTTP_404)
 
     def post(self, request, format=None):
         user = request.user
