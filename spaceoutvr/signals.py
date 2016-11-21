@@ -2,6 +2,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete, post_save
 
 from spaceoutvr.models import SpaceoutComment, SpaceoutNotification
+from spaceoutvr.notifications import OneSignalNotifications
 
 @receiver(post_delete, sender=SpaceoutComment)
 def delete_file(sender, instance, *args, **kwargs):
@@ -21,4 +22,5 @@ def add_subscriber(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=SpaceoutNotification)
 def push_notification(sender, instance, *args, **kwargs):
-    pass
+    n = OneSignalNotifications()
+    n.send(sender.user)

@@ -405,10 +405,10 @@ class CommentView(APIView):
 
 class NotificationsView(APIView):
     permission_classes = (IsAuthenticated,)
-    
+
     def get(self, request, format=None):
         user = request.user
-        Response(SpaceoutUserNotificationsSerializer(user).data)
+        return Response(SpaceoutUserNotificationsSerializer(user).data)
 
     def post(self, reqest, format=None):
         user = request.user

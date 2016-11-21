@@ -33,8 +33,8 @@ ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
 # SERVER_URL = 'https://spaceoutvr.mybluemix.net'
 if IS_LOCAL:
-    # SERVER_URL = 'http://192.168.0.109:8000'
-    SERVER_URL = 'http://127.0.0.1:8000'
+    SERVER_URL = 'http://192.168.0.109:8000'
+    # SERVER_URL = 'http://127.0.0.1:8000'
 
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]

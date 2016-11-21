@@ -115,3 +115,9 @@ class SpaceoutNotification(models.Model):
     type = models.IntegerField(default=0, choices=NOTIFICATION_TYPES)
     comment = models.ForeignKey(SpaceoutComment, on_delete=models.CASCADE)
     read = models.BooleanField(default=False)
+
+    # notifications = models.ForeignKey(
+    #     'SpaceoutNotification',
+    #     on_delete = models.CASCADE,
+    #     default = None,
+    # )

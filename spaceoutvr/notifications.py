@@ -4,30 +4,26 @@ import requests
 
 class OneSignalNotifications:
 
-    def send(self, ids):
+    def send(self, user):
         url = "https://onesignal.com/api/v1/notifications"
 
         data = """{
             "include_player_ids":["%s"],
             "app_id": "%s",
-            "headings":{"en": "***** TITLE *****"},
-            "contents":{"en": "***** BODY *****"},
+            "contents":{"en": "%s has commented on %s"},
             "url":"spaceoutvr://notification/"
         }"""
 
-        data = data % (ids, settings.ONESIGNAL_APP_ID)
-
-        print(data)
+        data = data % (
+            user.notification_id,
+            settings.ONESIGNAL_APP_ID,
+            user.first_name
+        )
 
         headers = {
             "Content-Type": "application/json; charset=utf-8",
             "Authorization": "Basic %s" % settings.ONESIGNAL_API_KEY
         }
 
-        print(headers)
-
         r = requests.post(url, data=data, headers=headers)
-
-        print(r)
-        for k in r:
-            print k
+        return r.status_code==200
