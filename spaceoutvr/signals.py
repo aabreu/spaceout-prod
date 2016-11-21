@@ -22,5 +22,6 @@ def add_subscriber(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=SpaceoutNotification)
 def push_notification(sender, instance, *args, **kwargs):
-    n = OneSignalNotifications()
-    n.send(sender.user)
+    pass
+    # n = OneSignalNotifications()
+    # n.send(sender.user)
