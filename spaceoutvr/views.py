@@ -17,11 +17,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer, SpaceoutUserNotificationsSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 from spaceoutvr.storage import IBMObjectStorage
 from spaceoutvr.notifications import OneSignalNotifications
@@ -403,18 +404,36 @@ class CommentView(APIView):
         })
 
 class NotificationsView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, format=None):
-        SpaceoutContent.objects.filter(commenters__id = 1)
-        # SpaceoutContent.objects.get(__commenter_id__=request.user.id)
+        user = request.user
+        Response(SpaceoutUserNotificationsSerializer(user).data)
 
-class DebugView(APIView):
+    def post(self, reqest, format=None):
+        user = request.user
+        notification = SpaceoutNotification.objects.get(id=request.data['notification_id'])
+        if(notification.user.id == user.id):
+            notification.read = True
+            notification.save()
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class DebugView(GenericAPIView):
+    serializer_class = SpaceoutNotificationSerializer
+
     def get(self, request, format=None):
 
         user = SpaceoutUser.objects.get(id=2)
+        return Response(SpaceoutUserNotificationsSerializer(user).data)
+        # serializer_class = SpaceoutNotificationSerializer
+        # n = OneSignalNotifications()
+        # n.send(user.notification_id)
 
-        n = OneSignalNotifications()
-        n.send(user.notification_id)
+        # queryset = user.notifications.all()
+        # return super(ListAPIView, self)
 
         return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
