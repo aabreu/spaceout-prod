@@ -18,6 +18,8 @@ class SpaceoutUser(EmailAbstractUser):
     twitter_id = models.CharField(max_length=128, default='')
     soundcloud_id = models.CharField(max_length=128, default='')
 
+    notifications = models.ManyToManyField('SpaceoutNotification')
+
     # Required
     objects = EmailUserManager()
 
@@ -36,10 +38,7 @@ class SpaceoutRoomDefinition(models.Model):
        return self.ROOM_TYPES[self.type][1]
 
 class SpaceoutRoom(models.Model):
-    user = models.ForeignKey(
-        SpaceoutUser,
-        on_delete = models.CASCADE,
-    )
+    user = models.ForeignKey(SpaceoutUser, on_delete = models.CASCADE)
 
     definition = models.ForeignKey(
         SpaceoutRoomDefinition,
@@ -74,10 +73,7 @@ class SpaceoutContent(models.Model):
     query = models.CharField(max_length=256)
     weight = models.FloatField(default=0)
     url = models.CharField(max_length=256)
-    room = models.ForeignKey(
-        SpaceoutRoom,
-        on_delete = models.CASCADE,
-    )
+    room = models.ForeignKey(SpaceoutRoom, on_delete = models.CASCADE)
 
     def admin_image(self):
         if self.type == self.CONTENT_TYPE_IMAGE:
@@ -86,11 +82,11 @@ class SpaceoutContent(models.Model):
             return '<video src="%s" width=\'100\' height=\'100\'/>' % self.url
     admin_image.allow_tags = True
 
-    # def get_subscription_list(self):
-    #     result = set()
-    #     for comment in self.comments:
-    #         result.Add(comment.author)
-    #     return result
+    def members(self):
+        result = set()
+        for comment in self.spaceoutcomment_set.all():
+            result.add(comment.author)
+        return result
 
 def comment_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -105,15 +101,16 @@ def comment_directory_path(instance, filename):
     )
 
 class SpaceoutComment(models.Model):
-
     url = models.CharField(max_length=256)
     audio_file = models.FileField(upload_to=comment_directory_path, default=None, storage=IBMObjectStorage())
+    author = models.ForeignKey(SpaceoutUser, on_delete = models.CASCADE)
+    content = models.ForeignKey(SpaceoutContent, on_delete = models.CASCADE)
 
-    author = models.ForeignKey(
-        SpaceoutUser,
-        on_delete = models.CASCADE,
+class SpaceoutNotification(models.Model):
+    NOTIFICATION_TYPE_COMMENT = 0
+    NOTIFICATION_TYPES = (
+     (NOTIFICATION_TYPE_COMMENT, 'Comment'),
     )
-    content = models.ForeignKey(
-        SpaceoutContent,
-        on_delete = models.CASCADE,
-    )
+
+    type = models.IntegerField(default=0, choices=NOTIFICATION_TYPES)
+    comment = models.ForeignKey(SpaceoutComment, on_delete=models.CASCADE)

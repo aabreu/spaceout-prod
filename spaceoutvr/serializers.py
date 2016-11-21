@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
-from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
+from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
 from django.conf import settings
 
 class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
@@ -48,7 +48,7 @@ class SpaceoutContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceoutContent
         fields = ('id', 'type', 'url', 'source', 'query', 'weight', 'idx', 'spaceoutcomment_set')
-        # depth = 2
+        depth = 2
 
 class SpaceoutRoomDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -83,3 +83,11 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
                   'spaceoutroom_set')
 
     depth = 2
+
+class SpaceoutNotificationSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    type = serializers.IntegerField()
+    comment = SpaceoutCommentSerializer()
+    class Meta:
+        model = SpaceoutNotification
+        fields = ('id', 'type', 'comment')

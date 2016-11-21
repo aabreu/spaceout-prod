@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^api/accounts/room/$', views.RoomView.as_view(), name='room'),
     url(r'^api/accounts/comment/$', views.CommentView.as_view(), name='comment'),
     url(r'^api/accounts/content/$', views.ContentView.as_view(), name='content'),
+    url(r'^api/accounts/notifications/$', views.NotificationsView.as_view(), name='notifications'),
     url(r'^api/accounts/debug/$', views.DebugView.as_view(), name='debug'),
 
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {

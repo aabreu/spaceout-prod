@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 from spaceoutvr.storage import IBMObjectStorage
 
@@ -374,6 +374,12 @@ class CommentView(APIView):
             audio_file=request.FILES['file'],
         )
         comment.save()
+
+        # send notifications to subscribed users
+        subscribed_users = content.get_subscription_list()
+        for subscribed in subscribed_users:
+            print(subscribed.email)
+
         return Response(SpaceoutCommentSerializer(comment).data)
 
     def delete(self, request, format=None):
@@ -395,15 +401,16 @@ class CommentView(APIView):
             'room_id':room_id,
         })
 
+class NotificationsView(APIView):
+    # permission_classes = (IsAuthenticated,)
+    def get(self, request, format=None):
+        SpaceoutContent.objects.filter(commenters__id = 1)
+        # SpaceoutContent.objects.get(__commenter_id__=request.user.id)
+
 class DebugView(APIView):
     def get(self, request, format=None):
-        user = SpaceoutUser.objects.get(id=6)
-        room = user.spaceoutroom_set.first()
-
-        if room == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(SpaceoutRoomSerializer(room).data)
+        user = SpaceoutUser.objects.get(id=2)
+        return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)
 
@@ -415,29 +422,16 @@ class DebugView(APIView):
         # return Response(status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        author = SpaceoutUser.objects.get(id=1)
-        content = SpaceoutContent.objects.get(id=1)
+        author = SpaceoutUser.objects.get(id=2)
+        content = SpaceoutContent.objects.get(id=52)
+
         comment = SpaceoutComment(
             author=author,
             content=content,
             audio_file=request.FILES['file'],
         )
         comment.save()
+
+
+
         return Response(SpaceoutCommentSerializer(comment).data)
-
-        # storage = IBMObjectStorage()
-        # storage.get_token()
-        # return Response(status=status.HTTP_200_OK)
-
-        # users = SpaceoutUser.objects.all()
-        # return Response(SpaceoutUserSerializer(users, many=True).data)
-
-        # rooms = SpaceoutRoom.objects.all()
-        # return Response(SpaceoutRoomSerializer(rooms, many=True).data)
-
-        # user = SpaceoutUser.objects.get(id=3)
-        # room = user.spaceoutroom_set.first()
-        # if room == None:
-        #     return Response({'error':'si'})
-        # else:
-        #     return Response(SpaceoutRoomSerializer(room).data)
