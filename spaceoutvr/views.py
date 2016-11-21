@@ -377,11 +377,6 @@ class CommentView(APIView):
         )
         comment.save()
 
-        # send notifications to subscribed users
-        subscribed_users = content.get_subscription_list()
-        for subscribed in subscribed_users:
-            print(subscribed.email)
-
         return Response(SpaceoutCommentSerializer(comment).data)
 
     def delete(self, request, format=None):
@@ -426,7 +421,7 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
 
-        user = SpaceoutUser.objects.get(id=2)
+        user = SpaceoutUser.objects.get(id=22)
         return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
         # n = OneSignalNotifications()
@@ -435,7 +430,7 @@ class DebugView(GenericAPIView):
         # queryset = user.notifications.all()
         # return super(ListAPIView, self)
 
-        return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
+        # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)
 
