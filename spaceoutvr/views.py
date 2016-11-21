@@ -24,6 +24,7 @@ from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment
 from spaceoutvr.storage import IBMObjectStorage
+from spaceoutvr.notifications import OneSignalNotifications
 
 import hashlib
 
@@ -409,7 +410,12 @@ class NotificationsView(APIView):
 
 class DebugView(APIView):
     def get(self, request, format=None):
+
         user = SpaceoutUser.objects.get(id=2)
+
+        n = OneSignalNotifications()
+        n.send(user.notification_id)
+
         return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)

@@ -27,6 +27,8 @@ TEMPLATE_DEBUG = True
 
 SPACEOUT_SEND_NOTIFICATIONS = True
 SPACEOUT_STORE_COMMENTS = True
+ONESIGNAL_API_KEY = 'MzZjNTUwMjYtNTU5Yy00M2UzLWFkZGYtZmMyYmQwZWVmNjU3'
+ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 
 SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
 # SERVER_URL = 'https://spaceoutvr.mybluemix.net'
