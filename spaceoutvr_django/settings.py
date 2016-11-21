@@ -25,12 +25,15 @@ DEBUG = True
 IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
+SPACEOUT_SEND_NOTIFICATIONS = True
+SPACEOUT_STORE_COMMENTS = True
+
 SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
 # SERVER_URL = 'https://spaceoutvr.mybluemix.net'
-
 if IS_LOCAL:
     # SERVER_URL = 'http://192.168.0.109:8000'
     SERVER_URL = 'http://127.0.0.1:8000'
+
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
 
