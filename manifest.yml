@@ -1,5 +1,5 @@
 ---
 applications:
-- name: spaceoutvr-dev
+- name: spaceoutvr
   services:
-  - ClearDB MySQL Database Development
+  - Compose for PostgreSQL-uo
