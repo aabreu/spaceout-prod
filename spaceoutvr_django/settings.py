@@ -112,6 +112,8 @@ if IS_LOCAL:
 else:
     import json
     import dj_database_url
+    print("####################################")
+    print(dj_database_url.config())
     DATABASES = {'default': dj_database_url.config()}
     # MYSQL = json.loads(os.environ['VCAP_SERVICES'])['cleardb'][0]['credentials']
     # DATABASES = {
