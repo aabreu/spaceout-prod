@@ -2,4 +2,4 @@
 applications:
 - name: spaceoutvr
   services:
-  - Compose for PostgreSQL-uo
+  - Compose for PostgreSQL Production
