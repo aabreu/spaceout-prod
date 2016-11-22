@@ -422,7 +422,7 @@ class DebugView(GenericAPIView):
     def get(self, request, format=None):
 
         user = SpaceoutUser.objects.get(id=1)
-        return Response(SpaceoutUserSerializer(user))
+        return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
         # n = OneSignalNotifications()
