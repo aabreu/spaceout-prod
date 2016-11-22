@@ -26,7 +26,7 @@ IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
 SPACEOUT_SEND_NOTIFICATIONS = True
-SPACEOUT_STORE_COMMENTS = True
+SPACEOUT_STORE_COMMENTS = not IS_LOCAL
 ONESIGNAL_API_KEY = 'MzZjNTUwMjYtNTU5Yy00M2UzLWFkZGYtZmMyYmQwZWVmNjU3'
 ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 
@@ -112,8 +112,6 @@ if IS_LOCAL:
 else:
     import json
     import dj_database_url
-    print("####################################")
-    print(dj_database_url.config())
     DATABASES = {'default': dj_database_url.config()}
     # MYSQL = json.loads(os.environ['VCAP_SERVICES'])['cleardb'][0]['credentials']
     # DATABASES = {

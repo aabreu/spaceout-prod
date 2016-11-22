@@ -84,9 +84,9 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     depth = 2
 
 class SpaceoutNotificationSerializer(serializers.ModelSerializer):
-    def get_content_url(self, notification):
-        return notification.comment.content.url
-        # return SpaceoutContentSerializer(notification.comment.content).data
+    def get_content(self, notification):
+        # return notification.comment.content.url
+        return SpaceoutContentSerializer(notification.comment.content).data
 
     def get_comment_id(self, notification):
         return notification.comment.id
@@ -104,14 +104,14 @@ class SpaceoutNotificationSerializer(serializers.ModelSerializer):
     type = serializers.IntegerField()
     read = serializers.BooleanField()
     comment_id = serializers.SerializerMethodField()
-    content_url = serializers.SerializerMethodField()
+    content = serializers.SerializerMethodField()
     room_id = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
 
     class Meta:
         model = SpaceoutNotification
-        fields = ('id', 'type', 'read', 'comment_id', 'content_url',
+        fields = ('id', 'type', 'read', 'comment_id', 'content',
                   'room_id', 'author', 'members')
 
 class SpaceoutUserNotificationsSerializer(serializers.ModelSerializer):
