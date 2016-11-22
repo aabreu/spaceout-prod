@@ -30,8 +30,8 @@ SPACEOUT_STORE_COMMENTS = not IS_LOCAL
 ONESIGNAL_API_KEY = 'MzZjNTUwMjYtNTU5Yy00M2UzLWFkZGYtZmMyYmQwZWVmNjU3'
 ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 
-SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
-# SERVER_URL = 'https://spaceoutvr.mybluemix.net'
+# SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
+SERVER_URL = 'https://spaceoutvr-prod.mybluemix.net'
 if IS_LOCAL:
     # SERVER_URL = 'http://192.168.0.109:8000'
     SERVER_URL = 'http://127.0.0.1:8000'
