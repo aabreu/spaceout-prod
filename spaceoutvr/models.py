@@ -18,7 +18,7 @@ class SpaceoutUser(EmailAbstractUser):
     twitter_id = models.CharField(max_length=128, default='')
     soundcloud_id = models.CharField(max_length=128, default='')
 
-    notifications = models.ManyToManyField('SpaceoutNotification')
+    # notifications = models.ManyToManyField('SpaceoutNotification')
 
     # Required
     objects = EmailUserManager()
@@ -116,8 +116,8 @@ class SpaceoutNotification(models.Model):
     comment = models.ForeignKey(SpaceoutComment, on_delete=models.CASCADE)
     read = models.BooleanField(default=False)
 
-    # notifications = models.ForeignKey(
-    #     'SpaceoutNotification',
-    #     on_delete = models.CASCADE,
-    #     default = None,
-    # )
+    user = models.ForeignKey(
+        SpaceoutUser,
+        on_delete = models.CASCADE,
+        default = None,
+    )

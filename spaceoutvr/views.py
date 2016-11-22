@@ -421,7 +421,7 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
 
-        user = SpaceoutUser.objects.get(id=22)
+        user = SpaceoutUser.objects.get(id=12)
         return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
         # n = OneSignalNotifications()
@@ -442,8 +442,8 @@ class DebugView(GenericAPIView):
         # return Response(status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        author = SpaceoutUser.objects.get(id=2)
-        content = SpaceoutContent.objects.get(id=52)
+        author = SpaceoutUser.objects.get(id=12)
+        content = SpaceoutContent.objects.get(id=582)
 
         comment = SpaceoutComment(
             author=author,

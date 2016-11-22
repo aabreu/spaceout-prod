@@ -33,8 +33,8 @@ ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 SERVER_URL = 'https://spaceoutvr-dev.mybluemix.net'
 # SERVER_URL = 'https://spaceoutvr.mybluemix.net'
 if IS_LOCAL:
-    SERVER_URL = 'http://192.168.0.109:8000'
-    # SERVER_URL = 'http://127.0.0.1:8000'
+    # SERVER_URL = 'http://192.168.0.109:8000'
+    SERVER_URL = 'http://127.0.0.1:8000'
 
 
 ALLOWED_HOSTS = [ 'localhost', '.mybluemix.net' ]
@@ -92,28 +92,38 @@ WSGI_APPLICATION = 'spaceoutvr_django.wsgi.application'
 
 if IS_LOCAL:
     DATABASES = {
+    	# 'default': {
+    	# 	'ENGINE': 'django.db.backends.mysql',
+    	# 	'NAME': "spaceoutvr_prod",
+    	# 	'USER': "root",
+    	# 	'PASSWORD': "root",
+    	# 	'HOST': "localhost",
+    	# 	'PORT': "8889"
+    	# }
     	'default': {
-    		'ENGINE': 'django.db.backends.mysql',
-    		'NAME': "spaceoutvr",
-    		'USER': "root",
-    		'PASSWORD': "root",
-    		'HOST': "localhost",
-    		'PORT': "8889"
-    	}
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'spaceoutvr_prod',
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
 else:
     import json
-    MYSQL = json.loads(os.environ['VCAP_SERVICES'])['cleardb'][0]['credentials']
-    DATABASES = {
-    	'default': {
-    		'ENGINE': 'django.db.backends.mysql',
-    		'NAME': MYSQL['name'],
-    		'USER': MYSQL['username'],
-    		'PASSWORD': MYSQL['password'],
-    		'HOST': MYSQL['hostname'],
-    		'PORT': MYSQL['port']
-    	}
-    }
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config()}
+    # MYSQL = json.loads(os.environ['VCAP_SERVICES'])['cleardb'][0]['credentials']
+    # DATABASES = {
+    # 	'default': {
+    # 		'ENGINE': 'django.db.backends.mysql',
+    # 		'NAME': MYSQL['name'],
+    # 		'USER': MYSQL['username'],
+    # 		'PASSWORD': MYSQL['password'],
+    # 		'HOST': MYSQL['hostname'],
+    # 		'PORT': MYSQL['port']
+    # 	}
+    # }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -169,7 +179,7 @@ LOGGING = {
 OBJECT_STORAGE_PROJECT_ID = '000d40f501d24442a0e152e3d285a79d'
 OBJECT_STORAGE_USER_ID = '0b288ba024754160b0e904842fe32ce8'
 OBJECT_STORAGE_PASSWORD = 'it-kDXeduV5x]0gP'
-OBJECT_STORAGE_CONTAINER = 'content-dev'
+OBJECT_STORAGE_CONTAINER = 'content-prod'
 
 if(IS_LOCAL):
     OBJECT_STORAGE_CONTAINER = 'content-local'

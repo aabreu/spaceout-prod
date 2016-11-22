@@ -17,8 +17,9 @@ def add_subscriber(sender, instance, *args, **kwargs):
         notification = SpaceoutNotification()
         notification.type = SpaceoutNotification.NOTIFICATION_TYPE_COMMENT
         notification.comment = instance
+        notification.user = member
         notification.save()
-        member.notifications.add(notification)
+        
 
 @receiver(post_save, sender=SpaceoutNotification)
 def push_notification(sender, instance, *args, **kwargs):

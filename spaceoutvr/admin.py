@@ -14,7 +14,6 @@ class SpaceoutUserAdmin(EmailUserAdmin):
         ('SpaceoutVR', {'fields': ('phone_number', 'latitude', 'longitude', 'notification_id', 'facebook_id', 'twitter_id', 'soundcloud_id', 'reddit_id')}),
     )
     model = SpaceoutUser
-    filter_horizontal = ('notifications',)
 
 class SpaceoutRoomAdmin(admin.ModelAdmin):
     list_display = ['user']

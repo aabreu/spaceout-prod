@@ -2,8 +2,10 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.utils.timezone
+import spaceoutvr.storage
 from django.conf import settings
+import django.utils.timezone
+import spaceoutvr.models
 
 
 class Migration(migrations.Migration):
@@ -30,6 +32,7 @@ class Migration(migrations.Migration):
                 ('phone_number', models.CharField(default=b'', max_length=30)),
                 ('latitude', models.CharField(default=b'', max_length=30)),
                 ('longitude', models.CharField(default=b'', max_length=30)),
+                ('personality_insights', models.TextField(default=b'')),
                 ('notification_id', models.CharField(default=b'', max_length=256)),
                 ('facebook_id', models.CharField(default=b'', max_length=128)),
                 ('reddit_id', models.CharField(default=b'', max_length=128)),
@@ -45,27 +48,68 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='SpaceoutComment',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('url', models.CharField(max_length=256)),
+                ('audio_file', models.FileField(default=None, storage=spaceoutvr.storage.IBMObjectStorage(), upload_to=spaceoutvr.models.comment_directory_path)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
             name='SpaceoutContent',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('type', models.IntegerField(default=0, choices=[(0, b'Gif'), (1, b'Image'), (2, b'Video')])),
                 ('idx', models.IntegerField(default=0)),
-                ('source', models.IntegerField(default=0, choices=[(0, b'Giphy'), (1, b'Video'), (2, b'Youtube'), (3, b'Google Images')])),
+                ('source', models.IntegerField(default=0, choices=[(0, b'Giphy'), (1, b'Wiki'), (2, b'Youtube'), (3, b'Google Images')])),
                 ('query', models.CharField(max_length=256)),
+                ('weight', models.FloatField(default=0)),
                 ('url', models.CharField(max_length=256)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SpaceoutNotification',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('type', models.IntegerField(default=0, choices=[(0, b'Comment')])),
+                ('read', models.BooleanField(default=False)),
+                ('comment', models.ForeignKey(to='spaceoutvr.SpaceoutComment')),
+                ('user', models.ForeignKey(default=None, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='SpaceoutRoom',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('type', models.IntegerField(default=0, choices=[(0, b'Home'), (1, b'360 Theatre')])),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
+        ),
+        migrations.CreateModel(
+            name='SpaceoutRoomDefinition',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('type', models.IntegerField(default=0, choices=[(0, b'Home'), (1, b'360 Theatre')])),
+                ('capacity', models.IntegerField(default=14)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='spaceoutroom',
+            name='definition',
+            field=models.ForeignKey(default=None, to='spaceoutvr.SpaceoutRoomDefinition'),
+        ),
+        migrations.AddField(
+            model_name='spaceoutroom',
+            name='user',
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='spaceoutcontent',
             name='room',
             field=models.ForeignKey(to='spaceoutvr.SpaceoutRoom'),
+        ),
+        migrations.AddField(
+            model_name='spaceoutcomment',
+            name='content',
+            field=models.ForeignKey(to='spaceoutvr.SpaceoutContent'),
         ),
     ]

@@ -84,28 +84,44 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     depth = 2
 
 class SpaceoutNotificationSerializer(serializers.ModelSerializer):
-    def get_content(self, notification):
-        return SpaceoutContentSerializer(notification.comment.content).data
+    def get_content_url(self, notification):
+        return notification.comment.content.url
+        # return SpaceoutContentSerializer(notification.comment.content).data
 
     def get_comment_id(self, notification):
         return notification.comment.id
+
+    def get_room_id(self, notification):
+        return notification.comment.content.room.id
+
+    def get_author(self, notification):
+        return SpaceoutUserSimpleSerializer(notification.comment.author).data
+
+    def get_members(self, notification):
+        return SpaceoutUserSimpleSerializer(notification.comment.content.members(), many=True).data
 
     id = serializers.IntegerField()
     type = serializers.IntegerField()
     read = serializers.BooleanField()
     comment_id = serializers.SerializerMethodField()
-    content = serializers.SerializerMethodField()
+    content_url = serializers.SerializerMethodField()
+    room_id = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
+
     class Meta:
         model = SpaceoutNotification
-        fields = ('id', 'type', 'read', 'comment_id', 'content')
+        fields = ('id', 'type', 'read', 'comment_id', 'content_url',
+                  'room_id', 'author', 'members')
 
 class SpaceoutUserNotificationsSerializer(serializers.ModelSerializer):
     def get_new_count(self, user):
-        return user.notifications.filter(read=False).count()
+        return user.spaceoutnotification_set.filter(read=False).count()
 
     new_count = serializers.SerializerMethodField()
-    notifications = SpaceoutNotificationSerializer(many=True)
+    spaceoutnotification_set = SpaceoutNotificationSerializer(many=True)
+
 
     class Meta:
         model = SpaceoutUser
-        fields = ('new_count', 'notifications')
+        fields = ('new_count', 'spaceoutnotification_set')

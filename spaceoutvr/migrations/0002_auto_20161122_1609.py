@@ -18,7 +18,7 @@ def create_room_definitions(apps, schena_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('spaceoutvr', '0006_auto_20161107_1921'),
+        ('spaceoutvr', '0001_initial'),
     ]
 
     operations = [
