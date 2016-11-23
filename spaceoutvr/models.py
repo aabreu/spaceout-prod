@@ -72,7 +72,7 @@ class SpaceoutContent(models.Model):
     source = models.IntegerField(default=0, choices=SOURCE_TYPES)
     query = models.CharField(max_length=256)
     weight = models.FloatField(default=0)
-    url = models.CharField(max_length=256)
+    url = models.CharField(max_length=2048)
     room = models.ForeignKey(SpaceoutRoom, on_delete = models.CASCADE)
 
     def admin_image(self):
