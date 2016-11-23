@@ -19,10 +19,9 @@ def add_subscriber(sender, instance, *args, **kwargs):
         notification.comment = instance
         notification.user = member
         notification.save()
-        
+
 
 @receiver(post_save, sender=SpaceoutNotification)
 def push_notification(sender, instance, *args, **kwargs):
-    pass
-    # n = OneSignalNotifications()
-    # n.send(sender.user)
+    n = OneSignalNotifications()
+    n.send(instance.user)

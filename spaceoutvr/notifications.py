@@ -10,8 +10,9 @@ class OneSignalNotifications:
         data = """{
             "include_player_ids":["%s"],
             "app_id": "%s",
-            "contents":{"en": "%s has commented on %s"},
-            "url":"spaceoutvr://notification/"
+            "contents":{"en": "%s made a new comment"},
+            "url":"spaceoutvr://notification/",
+            "data":"{\"type\":\"COMMENT\"}"
         }"""
 
         data = data % (
@@ -19,6 +20,8 @@ class OneSignalNotifications:
             settings.ONESIGNAL_APP_ID,
             user.first_name
         )
+
+        print("SENDING NOTIFICATION %s" % data)
 
         headers = {
             "Content-Type": "application/json; charset=utf-8",

@@ -447,8 +447,8 @@ class DebugView(GenericAPIView):
         # return Response(status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        author = SpaceoutUser.objects.get(id=12)
-        content = SpaceoutContent.objects.get(id=582)
+        author = SpaceoutUser.objects.get(id=2)
+        content = SpaceoutContent.objects.get(id=20)
 
         comment = SpaceoutComment(
             author=author,
