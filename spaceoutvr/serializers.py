@@ -106,7 +106,7 @@ class SpaceoutNotificationSerializer(serializers.ModelSerializer):
         return SpaceoutUserSimpleSerializer(notification.comment.content.members(), many=True).data
 
     def get_owner(self, notification):
-        return SpaceoutUserSimpleSerializer(notification.comment.content.room.user, many=True).data
+        return SpaceoutUserSimpleSerializer(notification.comment.content.room.user).data
 
     id = serializers.IntegerField()
     type = serializers.IntegerField()
