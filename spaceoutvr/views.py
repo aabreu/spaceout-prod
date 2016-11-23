@@ -275,6 +275,7 @@ class RoomView(APIView):
         # room.spaceoutcontent_set.all().delete()
         for c in content:
             # try to get a content room by ids
+            add_to_collection = False
             try:
                 contentModel = SpaceoutContent.objects.get(
                     room_id = room.id,
@@ -282,7 +283,7 @@ class RoomView(APIView):
                 )
             except:
                 contentModel = SpaceoutContent(room_id=room.id)
-                room.spaceoutcontent_set.add(contentModel)
+                add_to_collection = True
 
             contentModel.url = c['url']
             contentModel.type = c['type']
@@ -291,6 +292,9 @@ class RoomView(APIView):
             contentModel.weight = c['weight']
             contentModel.idx = c['idx']
             contentModel.save()
+
+            if(add_to_collection):
+                room.spaceoutcontent_set.add(contentModel)
 
         room.save()
         return Response(SpaceoutRoomSerializer(room).data)
@@ -421,7 +425,7 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
 
-        user = SpaceoutUser.objects.get(id=1)
+        user = SpaceoutUser.objects.get(id=2)
         return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
