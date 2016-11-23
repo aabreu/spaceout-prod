@@ -49,6 +49,11 @@ class SpaceoutContentSerializer(serializers.ModelSerializer):
         fields = ('id', 'type', 'url', 'source', 'query', 'weight', 'idx', 'spaceoutcomment_set')
         depth = 2
 
+class SpaceoutContentSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpaceoutContent
+        fields = ('id', 'type', 'url', 'source', 'query', 'weight', 'idx')
+
 class SpaceoutRoomDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceoutRoomDefinition
@@ -86,7 +91,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
 class SpaceoutNotificationSerializer(serializers.ModelSerializer):
     def get_content(self, notification):
         # return notification.comment.content.url
-        return SpaceoutContentSerializer(notification.comment.content).data
+        return SpaceoutContentSimpleSerializer(notification.comment.content).data
 
     def get_comment_id(self, notification):
         return notification.comment.id
@@ -100,19 +105,25 @@ class SpaceoutNotificationSerializer(serializers.ModelSerializer):
     def get_members(self, notification):
         return SpaceoutUserSimpleSerializer(notification.comment.content.members(), many=True).data
 
+    def get_owner(self, notification):
+        return SpaceoutUserSimpleSerializer(notification.comment.content.room.user, many=True).data
+
     id = serializers.IntegerField()
     type = serializers.IntegerField()
     read = serializers.BooleanField()
     comment_id = serializers.SerializerMethodField()
-    content = serializers.SerializerMethodField()
     room_id = serializers.SerializerMethodField()
+
+    content = serializers.SerializerMethodField()
+
     author = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
 
     class Meta:
         model = SpaceoutNotification
         fields = ('id', 'type', 'read', 'comment_id', 'content',
-                  'room_id', 'author', 'members')
+                  'room_id', 'author', 'members', 'owner')
 
 class SpaceoutUserNotificationsSerializer(serializers.ModelSerializer):
     def get_new_count(self, user):
