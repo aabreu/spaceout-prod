@@ -29,4 +29,8 @@ class OneSignalNotifications:
         }
 
         r = requests.post(url, data=data, headers=headers)
+
+        print("STATUS: %s" % r.status_code)
+        print("RESULT: %s" % r.text)
+
         return r.status_code==200
