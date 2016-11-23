@@ -249,7 +249,7 @@ class RoomView(APIView):
 
     def get(self, request, format=None):
         try:
-            user = SpaceoutUser.objects.get(id=request.data['user_id'])
+            user = SpaceoutUser.objects.get(id=request.query_params['user_id'])
             room = user.spaceoutroom_set.first()
             if room == None:
                 return Response(status=status.HTTP_404_NOT_FOUND)
