@@ -12,7 +12,7 @@ class OneSignalNotifications:
             "app_id": "%s",
             "contents":{"en": "%s made a new comment"},
             "url":"spaceoutvr://notification/",
-            "data":"{\"type\":\"COMMENT\"}"
+            "data":{"type":"COMMENT"}
         }"""
 
         data = data % (
