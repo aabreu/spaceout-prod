@@ -348,7 +348,7 @@ class ProfileView(APIView):
                 user.reddit_id = request.data['reddit_id']
             if key == 'soundcloud_id':
                 user.soundcloud_id = request.data['soundcloud_id']
-            if key == 'soundcloud_id':
+            if key == 'twitter_id':
                 user.twitter_id = request.data['twitter_id']
             if key == 'notifications_id':
                 user.notification_id = request.data['notifications_id']
@@ -409,7 +409,7 @@ class NotificationsView(APIView):
         user = request.user
         return Response(SpaceoutUserNotificationsSerializer(user).data)
 
-    def post(self, reqest, format=None):
+    def post(self, request, format=None):
         user = request.user
         notification = SpaceoutNotification.objects.get(id=request.data['notification_id'])
         if(notification.user.id == user.id):
