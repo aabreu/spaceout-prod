@@ -17,6 +17,9 @@ class SpaceoutUser(EmailAbstractUser):
     reddit_id = models.CharField(max_length=128, default='')
     twitter_id = models.CharField(max_length=128, default='')
     soundcloud_id = models.CharField(max_length=128, default='')
+    fb_gender = models.CharField(max_length=10, default='')
+    fb_location = models.CharField(max_length=128, default='')
+    fb_birthdate = models.CharField(max_length=16, default='')
 
     # notifications = models.ManyToManyField('SpaceoutNotification')
 

@@ -84,6 +84,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
         model = SpaceoutUser
         fields = ('id', 'first_name', 'last_name', 'latitude', 'longitude', 'personality_insights', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
+                  'fb_gender', 'fb_location', 'fb_birthdate', 
                   'spaceoutroom_set')
 
     depth = 2

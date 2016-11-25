@@ -362,6 +362,12 @@ class ProfileView(APIView):
                 user.first_name = request.data['first_name']
             if key == 'last_name':
                 user.last_name = request.data['last_name']
+            if key == 'fb_gender':
+                user.fb_gender = request.data['fb_gender']
+            if key == 'fb_location':
+                user.fb_location = request.data['fb_location']
+            if key == 'fb_birthdate':
+                user.fb_birthdate = request.data['fb_birthdate']
 
         user.save()
 
