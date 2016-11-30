@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 import sys
 from imp import reload
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -29,6 +27,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
 DEBUG = True
 IS_LOCAL = False
 TEMPLATE_DEBUG = True
+
+if IS_LOCAL
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
 
 SPACEOUT_SEND_NOTIFICATIONS = True
 # SPACEOUT_STORE_COMMENTS = True
