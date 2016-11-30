@@ -28,7 +28,7 @@ DEBUG = True
 IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
-if IS_LOCAL
+if IS_LOCAL:
     reload(sys)
     sys.setdefaultencoding("utf-8")
 
