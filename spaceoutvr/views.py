@@ -23,8 +23,9 @@ from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer, SpaceoutUserNotificationsSerializer
+from spaceoutvr.serializers import WatsonBlacklistSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
-from spaceoutvr.models import WatsonInput, WatsonOutput
+from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist
 from spaceoutvr.notifications import OneSignalNotifications
 
 import hashlib
@@ -455,14 +456,22 @@ class WatsonView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+    def get(self, request, format=None):
+        # clean watson data for user
+        try:
+            WatsonInput.objects.filter(user_id=request.user.id).delete()
+        except:
+            pass
+        # return blacklist
+        return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
-
-        user = SpaceoutUser.objects.get(id=2)
-        return Response(SpaceoutUserSerializer(user).data)
+        return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
+        # user = SpaceoutUser.objects.get(id=2)
+        # return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
         # n = OneSignalNotifications()

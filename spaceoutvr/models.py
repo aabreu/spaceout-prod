@@ -199,3 +199,6 @@ class WatsonOutput(models.Model):
         on_delete = models.CASCADE,
         default = None,
     )
+
+class WatsonBlacklist(models.Model):
+    text = models.CharField(max_length=128, default='')

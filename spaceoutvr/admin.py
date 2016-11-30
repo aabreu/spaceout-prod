@@ -56,6 +56,11 @@ class WatsonInputAdmin(admin.ModelAdmin):
     fields = ('user', 'recipe_id', 'social_network', 'chunk_id', 'data_size', 'watson_response_time', 'chunk_date_start', 'chunk_date_end', 'input_url')
     inlines = (WatsonOutputInline,)
 
+class WatsonBlacklistAdmin(admin.ModelAdmin):
+    model = WatsonBlacklist
+    list_display = ('text',)
+
+
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), SpaceoutUserAdmin)
 admin.site.register(SpaceoutRoom, SpaceoutRoomAdmin)
@@ -65,3 +70,4 @@ admin.site.register(SpaceoutComment, SpaceoutCommentAdmin)
 admin.site.register(SpaceoutNotification, SpaceoutNotificationAdmin)
 admin.site.register(WatsonInput, WatsonInputAdmin)
 admin.site.register(WatsonOutput, WatsonOutputAdmin)
+admin.site.register(WatsonBlacklist, WatsonBlacklistAdmin)

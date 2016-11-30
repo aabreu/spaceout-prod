@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
+from spaceoutvr.models import WatsonBlacklist
+
 from django.conf import settings
 
 class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
@@ -84,7 +86,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
         model = SpaceoutUser
         fields = ('id', 'first_name', 'last_name', 'latitude', 'longitude', 'personality_insights', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
-                  'fb_gender', 'fb_location', 'fb_birthdate', 
+                  'fb_gender', 'fb_location', 'fb_birthdate',
                   'spaceoutroom_set')
 
     depth = 2
@@ -133,7 +135,11 @@ class SpaceoutUserNotificationsSerializer(serializers.ModelSerializer):
     new_count = serializers.SerializerMethodField()
     spaceoutnotification_set = SpaceoutNotificationSerializer(many=True)
 
-
     class Meta:
         model = SpaceoutUser
         fields = ('new_count', 'spaceoutnotification_set')
+
+class WatsonBlacklistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatsonBlacklist
+        fields = ('text',)
