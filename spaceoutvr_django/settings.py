@@ -10,6 +10,10 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -26,7 +30,9 @@ IS_LOCAL = False
 TEMPLATE_DEBUG = True
 
 SPACEOUT_SEND_NOTIFICATIONS = True
+# SPACEOUT_STORE_COMMENTS = True
 SPACEOUT_STORE_COMMENTS = not IS_LOCAL
+
 ONESIGNAL_API_KEY = 'MzZjNTUwMjYtNTU5Yy00M2UzLWFkZGYtZmMyYmQwZWVmNjU3'
 ONESIGNAL_APP_ID = '2309120b-b9a7-498a-b7ae-97749ab28130'
 
@@ -179,7 +185,10 @@ LOGGING = {
 OBJECT_STORAGE_PROJECT_ID = '000d40f501d24442a0e152e3d285a79d'
 OBJECT_STORAGE_USER_ID = '0b288ba024754160b0e904842fe32ce8'
 OBJECT_STORAGE_PASSWORD = 'it-kDXeduV5x]0gP'
-OBJECT_STORAGE_CONTAINER = 'content-prod'
+OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-prod'
+OBJECT_STORAGE_WATSON_CONTAINER = 'watson-prod'
 
 if(IS_LOCAL):
-    OBJECT_STORAGE_CONTAINER = 'content-local'
+    OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-local'
+    OBJECT_STORAGE_WATSON_CONTAINER = 'watson-local'
+    OBJECT_STORAGE_WATSON_OUTPUT_CONTAINER = 'watson-output-local'

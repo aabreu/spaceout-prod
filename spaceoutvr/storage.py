@@ -5,10 +5,13 @@ from django.utils.deconstruct import deconstructible
 
 import requests
 
+from datetime import datetime, timedelta
 
 @deconstructible
 class IBMObjectStorage(Storage):
 
+    container = ''
+    container_ready = False
     token_url = 'https://identity.open.softlayer.com/v3/auth/tokens'
     token = ''
     api_url = "https://dal.objectstorage.open.softlayer.com/v1/AUTH_%s/%s/%s"
@@ -16,8 +19,9 @@ class IBMObjectStorage(Storage):
 
     def __init__(self, option=None):
         if settings.SPACEOUT_STORE_COMMENTS:
-            self.token = self.get_token()
+            self.get_token()
             self.config_container()
+            self.check_token()
 
     def _open(self, name, mode='rb'):
         pass
@@ -25,6 +29,7 @@ class IBMObjectStorage(Storage):
 
     def _save(self, name, content):
         if settings.SPACEOUT_STORE_COMMENTS:
+            self.check_token()
             url = self.url(name)
             headers = {'X-Auth-Token':self.token, 'Content-Type':'application/octet-stream'}
             r = requests.put(url, data=content, headers=headers)
@@ -32,6 +37,7 @@ class IBMObjectStorage(Storage):
 
     def exists(self, name):
         if settings.SPACEOUT_STORE_COMMENTS:
+            self.check_token()
             url = self.url(name)
             headers = {'X-Auth-Token':self.token}
             r = requests.get(url, headers=headers)
@@ -40,13 +46,14 @@ class IBMObjectStorage(Storage):
 
     def delete(self, name):
         if settings.SPACEOUT_STORE_COMMENTS:
+            self.check_token()
             url = self.url(name)
             headers = {'X-Auth-Token':self.token}
             r = requests.delete(url, headers=headers)
 
     def url(self, name):
         if settings.SPACEOUT_STORE_COMMENTS:
-            return self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, settings.OBJECT_STORAGE_CONTAINER, name)
+            return self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, self.container, name)
         return ""
 
     def get_token(self):
@@ -74,10 +81,37 @@ class IBMObjectStorage(Storage):
             data = data % (settings.OBJECT_STORAGE_USER_ID, settings.OBJECT_STORAGE_PASSWORD, settings.OBJECT_STORAGE_PROJECT_ID)
             headers = {'Content-Type': 'application/json'}
             r = requests.post(self.token_url, data=data, headers=headers)
-            return r.headers['X-Subject-Token']
+            d = r.json()
+            self.expires_at = datetime.strptime(d['token']['expires_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            self.token = r.headers['X-Subject-Token']
+
+    def check_token(self):
+        if self.expires_at - datetime.now() < timedelta(minutes = 1):
+            print("REGENERATING TOKEN %s " % (self.expires_at - datetime.now()))
+            self.get_token()
 
     def config_container(self):
+        if self.container_ready:
+            return
+        if self.container == None:
+            return
         if settings.SPACEOUT_STORE_COMMENTS:
+            self.check_token()
+            print("INITIALIZING CONTAINER %s" % self.container)
             headers = {'X-Container-Read':'.r:*', 'X-Auth-Token':self.token}
-            url = self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, settings.OBJECT_STORAGE_CONTAINER, "")
+            url = self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, self.container, "")
             r = requests.post(url, headers=headers)
+            self.container_ready = r.status_code == 200
+
+
+@deconstructible
+class CommentsStorage(IBMObjectStorage):
+    def config_container(self):
+        self.container = settings.OBJECT_STORAGE_COMMENTS_CONTAINER
+        super(CommentsStorage, self).config_container()
+
+@deconstructible
+class WatsonStorage(IBMObjectStorage):
+    def config_container(self):
+        self.container = settings.OBJECT_STORAGE_WATSON_CONTAINER
+        super(WatsonStorage, self).config_container()

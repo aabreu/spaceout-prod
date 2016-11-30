@@ -24,10 +24,12 @@ from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer, SpaceoutUserNotificationsSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
-from spaceoutvr.storage import IBMObjectStorage
+from spaceoutvr.models import WatsonInput, WatsonOutput
 from spaceoutvr.notifications import OneSignalNotifications
 
 import hashlib
+from datetime import datetime
+import json
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -424,6 +426,34 @@ class NotificationsView(APIView):
             return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+class WatsonView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        watson_input = WatsonInput(
+            user = request.user,
+            chunk_id = request.data['chunk_id'],
+            recipe_id = request.data['recipe_id'],
+            chunk_date_start = request.data['start_date'],
+            chunk_date_end = request.data['end_date'],
+            data_size = request.data['data_size'],
+            watson_response_time = request.data['watson_response_time'],
+            input_url=request.FILES['input'],
+        )
+        watson_input.save()
+
+        results = json.loads(request.data['watson_result'])
+        for result in results['result']:
+            watson_output = WatsonOutput(
+                text = result['text'],
+                analysis = result['analysis'],
+                relevance = result['relevance'],
+                watson_input = watson_input
+            )
+            watson_output.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class DebugView(GenericAPIView):

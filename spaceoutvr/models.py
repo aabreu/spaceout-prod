@@ -3,9 +3,33 @@ from django.db import models
 from authemail.models import EmailUserManager, EmailAbstractUser
 
 from spaceoutvr_django import settings
-from spaceoutvr.storage import IBMObjectStorage
+from spaceoutvr.storage import CommentsStorage, WatsonStorage
 
 import datetime
+
+def comment_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    now = datetime.datetime.utcnow()
+    name = now.strftime("%H_%M_%S_%f")
+    return '{0}_{1}_{2}_{3}_{4}.wav'.format(
+        now.year,
+        now.month,
+        now.day,
+        instance.content.room.user.id,
+        name,
+    )
+
+def watson_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    now = datetime.datetime.utcnow()
+    name = now.strftime("%H_%M_%S_%f")
+    return '{0}_{1}_{2}_{3}_{4}.txt'.format(
+        now.year,
+        now.month,
+        now.day,
+        instance.user.id,
+        name,
+    )
 
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
@@ -91,21 +115,9 @@ class SpaceoutContent(models.Model):
             result.add(comment.author)
         return result
 
-def comment_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    now = datetime.datetime.utcnow()
-    name = now.strftime("%H_%M_%S_%f")
-    return '{0}_{1}_{2}_{3}_{4}.wav'.format(
-        now.year,
-        now.month,
-        now.day,
-        instance.content.room.user.id,
-        name,
-    )
-
 class SpaceoutComment(models.Model):
     url = models.CharField(max_length=256)
-    audio_file = models.FileField(upload_to=comment_directory_path, default=None, storage=IBMObjectStorage())
+    audio_file = models.FileField(upload_to=comment_directory_path, default=None, storage=CommentsStorage())
     author = models.ForeignKey(SpaceoutUser, on_delete = models.CASCADE)
     content = models.ForeignKey(SpaceoutContent, on_delete = models.CASCADE)
 
@@ -121,6 +133,69 @@ class SpaceoutNotification(models.Model):
 
     user = models.ForeignKey(
         SpaceoutUser,
+        on_delete = models.CASCADE,
+        default = None,
+    )
+
+class WatsonInput(models.Model):
+    SOCIAL_NETWORK_FACEBOOK = 0
+    SOCIAL_NETWORK_TWITTER = 1
+    SOCIAL_NETWORK_REDDIT = 2
+    SOCIAL_NETWORK_SOUNDCLOUD = 3
+    SOCIAL_NETWORK_TYPES = (
+     (SOCIAL_NETWORK_FACEBOOK, 'Facebook'),
+     (SOCIAL_NETWORK_TWITTER, 'Twitter'),
+     (SOCIAL_NETWORK_REDDIT, 'Reddit'),
+     (SOCIAL_NETWORK_SOUNDCLOUD, 'Sound Cloud'),
+    )
+
+    WATSON_RECIPE_LIKES = 0
+    WATSON_RECIPE_SHARES = 1
+    WATSON_RECIPE_POSTS = 2
+    WATSON_RECIPE_EVENTS = 3
+    WATSON_RECIPE_TYPE = (
+     (WATSON_RECIPE_LIKES, 'Likes'),
+     (WATSON_RECIPE_SHARES, 'Shares'),
+     (WATSON_RECIPE_POSTS, 'Posts'),
+     (WATSON_RECIPE_EVENTS, 'Events'),
+    )
+
+    recipe_id = models.IntegerField(choices=WATSON_RECIPE_TYPE)
+    chunk_id = models.IntegerField()
+    chunk_date_start = models.DateField()
+    chunk_date_end = models.DateField()
+    chunk_date_end = models.DateField()
+    data_size = models.FloatField()
+    social_network = models.IntegerField(default=0, choices=SOCIAL_NETWORK_TYPES)
+    input_url = models.FileField(upload_to=watson_directory_path, default=None, storage=WatsonStorage())
+    watson_response_time = models.FloatField()
+
+    user = models.ForeignKey(
+        SpaceoutUser,
+        on_delete = models.CASCADE,
+        default = None,
+    )
+
+class WatsonOutput(models.Model):
+
+    WATSON_ANALYSIS_CONCEPTS = 0
+    WATSON_ANALYSIS_KEYWORDS = 1
+    WATSON_ANALYSIS_ENTITIES = 2
+    WATSON_ANALYSIS_TYPES = (
+     (WATSON_ANALYSIS_CONCEPTS, 'Concepts'),
+     (WATSON_ANALYSIS_KEYWORDS, 'Keywords'),
+     (WATSON_ANALYSIS_ENTITIES, 'Entities'),
+    )
+
+    analysis = models.IntegerField(default=0, choices=WATSON_ANALYSIS_TYPES)
+    text = models.CharField(max_length=256, default='')
+    relevance = models.FloatField()
+
+    def model_callable(self):
+        return self.text
+
+    watson_input = models.ForeignKey(
+        WatsonInput,
         on_delete = models.CASCADE,
         default = None,
     )
