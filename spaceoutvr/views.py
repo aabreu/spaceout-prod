@@ -453,7 +453,7 @@ class NotificationsView(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class WatsonView(APIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         watson_input = WatsonInput(
@@ -493,7 +493,7 @@ class WatsonView(APIView):
         return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
 
 class OnLineView(APIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     def get(self, request, format=None):
         users = SpaceoutUser.objects.order_by('-last_activity')
 
