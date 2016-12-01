@@ -500,7 +500,7 @@ class OnLineView(APIView):
 
         page_size = request.query_params['page_size']
         page = request.query_params['page']
-        paginator = Paginator(users, 25) # Show 25 contacts per page
+        paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
             result = paginator.page(page)
@@ -524,7 +524,7 @@ class PopularView(APIView):
 
         page_size = request.query_params['page_size']
         page = request.query_params['page']
-        paginator = Paginator(users, 25) # Show 25 contacts per page
+        paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
             result = paginator.page(page)
@@ -549,7 +549,7 @@ class FeaturedView(APIView):
 
         page_size = request.query_params['page_size']
         page = request.query_params['page']
-        paginator = Paginator(users, 25) # Show 25 contacts per page
+        paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
             result = paginator.page(page)
