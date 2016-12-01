@@ -51,12 +51,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='spaceoutuser',
             name='personality_insights_input_url',
-            field=models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), upload_to=spaceoutvr.models.personality_insights_input_directory_path, blank=True),
+            field=models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), null=True, upload_to=spaceoutvr.models.personality_insights_input_directory_path, blank=True),
         ),
         migrations.AlterField(
             model_name='spaceoutuser',
             name='personality_insights_output_url',
-            field=models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), upload_to=spaceoutvr.models.personality_insights_output_directory_path, blank=True),
+            field=models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), null=True, upload_to=spaceoutvr.models.personality_insights_output_directory_path, blank=True),
         ),
         migrations.AlterField(
             model_name='spaceoutuser',
