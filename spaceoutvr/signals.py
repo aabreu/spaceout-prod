@@ -32,11 +32,12 @@ def add_subscriber(sender, instance, *args, **kwargs):
     # members = SpaceoutContent.objects.filter(commenters__id = 1)
     members = instance.content.members()
     for member in members:
-        notification = SpaceoutNotification()
-        notification.type = SpaceoutNotification.NOTIFICATION_TYPE_COMMENT
-        notification.comment = instance
-        notification.user = member
-        notification.save()
+        if member.id != instance.author.id:
+            notification = SpaceoutNotification()
+            notification.type = SpaceoutNotification.NOTIFICATION_TYPE_COMMENT
+            notification.comment = instance
+            notification.user = member
+            notification.save()
 
     # increase room owner's popularity
     if instance.content.room.user.id != instance.author.id:
