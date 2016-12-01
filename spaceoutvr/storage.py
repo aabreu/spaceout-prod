@@ -54,6 +54,7 @@ class IBMObjectStorage(Storage):
 
     def url(self, name):
         if settings.SPACEOUT_STORE_COMMENTS:
+            self.check_token()
             return self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, self.container, name)
         return ""
 
