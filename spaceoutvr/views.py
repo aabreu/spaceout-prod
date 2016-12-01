@@ -19,6 +19,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.pagination import PaginationSerializer
 
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
@@ -26,7 +27,7 @@ from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
 from spaceoutvr.serializers import SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer
 from spaceoutvr.serializers import SpaceoutUserNotificationsSerializer, SpaceoutUserSimpleSerializer
-from spaceoutvr.serializers import WatsonBlacklistSerializer
+from spaceoutvr.serializers import WatsonBlacklistSerializer, PeopleSeriaizer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
 from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist
 from spaceoutvr.notifications import OneSignalNotifications
@@ -453,7 +454,7 @@ class NotificationsView(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 class WatsonView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         watson_input = WatsonInput(
@@ -510,7 +511,11 @@ class OnLineView(APIView):
             # If page is out of range (e.g. 9999), deliver last page of results.
             result = paginator.page(paginator.num_pages)
 
-        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
+        serializer_context = {'request': request}
+        serializer = PeopleSeriaizer(result,
+                                     context=serializer_context)
+        return Response(serializer.data)
+
 
 class PopularView(APIView):
     # permission_classes = (IsAuthenticated,)
@@ -530,11 +535,15 @@ class PopularView(APIView):
             # If page is out of range (e.g. 9999), deliver last page of results.
             result = paginator.page(paginator.num_pages)
 
-        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
+        serializer_context = {'request': request}
+        serializer = PeopleSeriaizer(result,
+                                     context=serializer_context)
+        return Response(serializer.data)
+
 
 
 class FeaturedView(APIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     def get(self, request, format=None):
         users = SpaceoutUser.objects.filter(featured=True)
 
@@ -551,7 +560,10 @@ class FeaturedView(APIView):
             # If page is out of range (e.g. 9999), deliver last page of results.
             result = paginator.page(paginator.num_pages)
 
-        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
+        serializer_context = {'request': request}
+        serializer = PeopleSeriaizer(result,
+                                     context=serializer_context)
+        return Response(serializer.data)
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer

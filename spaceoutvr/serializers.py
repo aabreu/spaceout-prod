@@ -1,5 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model
+
 from rest_framework import serializers
+from rest_framework.pagination import PaginationSerializer
+
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
 from spaceoutvr.models import WatsonBlacklist
 
@@ -159,3 +162,7 @@ class WatsonBlacklistSerializer(serializers.ModelSerializer):
     class Meta:
         model = WatsonBlacklist
         fields = ('text',)
+
+class PeopleSeriaizer(PaginationSerializer):
+    class Meta:
+        object_serializer_class = SpaceoutUserSimpleSerializer
