@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from authemail.models import EmailUserManager, EmailAbstractUser
 
@@ -51,6 +52,9 @@ class SpaceoutUser(EmailAbstractUser):
     fb_gender = models.CharField(max_length=10, default='')
     fb_location = models.CharField(max_length=128, default='')
     fb_birthdate = models.CharField(max_length=16, default='')
+    featured = models.BooleanField(default=False)
+    last_activity = models.DateTimeField(default=timezone.now)
+    popularity = models.IntegerField(default=0)
 
     personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True)
     personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True)

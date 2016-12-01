@@ -5,6 +5,9 @@ from spaceoutvr import views
 urlpatterns = [
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
     url(r'^api/accounts/friends/$', views.FriendsView.as_view(), name='get_contacts'),
+    url(r'^api/accounts/people/online/$', views.OnLineView.as_view(), name='people_online'),
+    url(r'^api/accounts/people/popular/$', views.PopularView.as_view(), name='people_popular'),
+    url(r'^api/accounts/people/featured/$', views.FeaturedView.as_view(), name='people_featured'),
     url(r'^api/accounts/room/$', views.RoomView.as_view(), name='room'),
     url(r'^api/accounts/comment/$', views.CommentView.as_view(), name='comment'),
     url(r'^api/accounts/content/$', views.ContentView.as_view(), name='content'),

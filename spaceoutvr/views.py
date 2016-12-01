@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from authemail import wrapper
 
@@ -22,7 +23,9 @@ from rest_framework.generics import GenericAPIView
 from .forms import SignupForm, LoginForm, PasswordResetForm
 from .forms import PasswordResetVerifiedForm, PasswordChangeForm
 
-from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer, SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer, SpaceoutUserNotificationsSerializer
+from spaceoutvr.serializers import SpaceoutUserSerializer, SpaceoutRoomSerializer
+from spaceoutvr.serializers import SpaceoutCommentSerializer, SpaceoutContentSerializer, SpaceoutNotificationSerializer
+from spaceoutvr.serializers import SpaceoutUserNotificationsSerializer, SpaceoutUserSimpleSerializer
 from spaceoutvr.serializers import WatsonBlacklistSerializer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
 from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist
@@ -263,6 +266,8 @@ class RoomView(APIView):
 
     def post(self, request, format=None):
         user = request.user
+        user.last_activity = datetime.now()
+        user.save()
 
         # create the first room, if room is empty
         if user.spaceoutroom_set.count() == 0:
@@ -320,6 +325,8 @@ class ContentView(APIView):
 
     def post(self, request, format=None):
         user = request.user
+        user.last_activity = datetime.now()
+        user.save()
         c = request.data
         content = SpaceoutContent.objects.get(id=c['id'])
         if user.id == content.room.user.id:
@@ -339,10 +346,14 @@ class ProfileView(APIView):
     serializer_class = SpaceoutUserSerializer
 
     def get(self, request, format=None):
-        return Response(self.serializer_class(request.user).data)
+        user = request.user
+        user.last_activity = datetime.now()
+        user.save()
+        return Response(self.serializer_class(user).data)
 
     def post(self, request, format=None):
         user = request.user
+        user.last_activity = datetime.now()
 
         for key in request.data:
             print(key)
@@ -390,6 +401,8 @@ class CommentView(APIView):
 
     def post(self, request, format=None):
         author = request.user
+        author.last_activity = datetime.now()
+        author.save()
         # author = SpaceoutUser.objects.get(id=1)
         content = SpaceoutContent.objects.get(id=request.data['content_id'])
         comment = SpaceoutComment(
@@ -403,6 +416,8 @@ class CommentView(APIView):
 
     def delete(self, request, format=None):
         author = request.user
+        author.last_activity = datetime.now()
+        author.save()
         comment = SpaceoutComment.objects.get(id=request.data['comment_id'])
         if author.id != comment.author.id:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -467,12 +482,76 @@ class WatsonView(APIView):
 
     def get(self, request, format=None):
         # clean watson data for user
+        user = request.user
+        user.last_activity = datetime.now()
+        user.save()
         try:
-            WatsonInput.objects.filter(user_id=request.user.id).delete()
+            WatsonInput.objects.filter(user_id=user.id).delete()
         except:
             pass
         # return blacklist
         return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
+
+class OnLineView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, format=None):
+        users = SpaceoutUser.objects.order_by('-last_activity')
+
+        page_size = request.query_params['page_size']
+        page = request.query_params['page']
+        paginator = Paginator(users, 25) # Show 25 contacts per page
+
+        try:
+            result = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            result = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            result = paginator.page(paginator.num_pages)
+
+        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
+
+class PopularView(APIView):
+    # permission_classes = (IsAuthenticated,)
+    def get(self, request, format=None):
+        users = SpaceoutUser.objects.order_by('-popularity')
+
+        page_size = request.query_params['page_size']
+        page = request.query_params['page']
+        paginator = Paginator(users, 25) # Show 25 contacts per page
+
+        try:
+            result = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            result = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            result = paginator.page(paginator.num_pages)
+
+        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
+
+
+class FeaturedView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, format=None):
+        users = SpaceoutUser.objects.filter(featured=True)
+
+        page_size = request.query_params['page_size']
+        page = request.query_params['page']
+        paginator = Paginator(users, 25) # Show 25 contacts per page
+
+        try:
+            result = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            result = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            result = paginator.page(paginator.num_pages)
+
+        return Response(SpaceoutUserSimpleSerializer(result, many=True).data)
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
