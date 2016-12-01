@@ -6,6 +6,9 @@ from spaceoutvr.models import WatsonBlacklist
 from django.conf import settings
 
 class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
+    def get_personality_insights_output_url(self, user):
+        return user.personality_insights_output_url.storage.url(user.personality_insights_output_url.name)
+
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -17,10 +20,12 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     latitude = serializers.CharField()
     longitude = serializers.CharField()
     notification_id = serializers.CharField()
+    personality_insights_output_url = serializers.SerializerMethodField()
+
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'email', 'first_name', 'last_name', 'latitude', 'longitude', 'notification_id',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id')
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url')
 
     depth = 2
 
@@ -62,13 +67,20 @@ class SpaceoutRoomDefinitionSerializer(serializers.ModelSerializer):
         fields = ('type', 'capacity')
 
 class SpaceoutRoomSerializer(serializers.ModelSerializer):
+    def get_owner(self, room):
+        return SpaceoutUserSimpleSerializer(room.user).data
+
     spaceoutcontent_set = SpaceoutContentSerializer(many=True)
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = SpaceoutRoom
-        fields = ('id', 'definition', 'spaceoutcontent_set')
+        fields = ('id', 'definition', 'spaceoutcontent_set', 'owner')
         depth = 2
 
 class SpaceoutUserSerializer(serializers.ModelSerializer):
+    def get_personality_insights_output_url(self, user):
+        return user.personality_insights_output_url.storage.url(user.personality_insights_output_url.name)
+
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -80,13 +92,14 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     latitude = serializers.CharField()
     longitude = serializers.CharField()
     notification_id = serializers.CharField()
-    personality_insights = serializers.CharField();
+    personality_insights_output_url = serializers.SerializerMethodField()
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
-        fields = ('id', 'first_name', 'last_name', 'latitude', 'longitude', 'personality_insights', 'notification_id',
+        fields = ('id', 'first_name', 'last_name', 'latitude', 'longitude', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
                   'fb_gender', 'fb_location', 'fb_birthdate',
+                  'personality_insights_output_url',
                   'spaceoutroom_set')
 
     depth = 2

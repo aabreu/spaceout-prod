@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('chunk_date_end', models.DateField()),
                 ('data_size', models.FloatField()),
                 ('social_network', models.IntegerField(default=0, choices=[(0, b'Facebook'), (1, b'Twitter'), (2, b'Reddit'), (3, b'Sound Cloud')])),
-                ('input_url', models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), upload_to=spaceoutvr.models.watson_directory_path)),
+                ('input_url', models.FileField(default=None, storage=spaceoutvr.storage.WatsonStorage(), upload_to=spaceoutvr.models.alchemy_directory_path)),
                 ('watson_response_time', models.FloatField()),
             ],
         ),

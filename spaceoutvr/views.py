@@ -345,8 +345,10 @@ class ProfileView(APIView):
         user = request.user
 
         for key in request.data:
+            print(key)
             if key == 'facebook_id':
-                user.facebook_id = request.data['facebook_id']
+                if user.facebook_id == None:
+                    user.facebook_id = request.data['facebook_id']
             if key == 'reddit_id':
                 user.reddit_id = request.data['reddit_id']
             if key == 'soundcloud_id':
@@ -359,8 +361,6 @@ class ProfileView(APIView):
                 user.latitude = request.data['latitude']
             if key == 'longitude':
                 user.longitude = request.data['longitude']
-            if key == 'personality_insights':
-                user.personality_insights = request.data['personality_insights']
             if key == 'first_name':
                 user.first_name = request.data['first_name']
             if key == 'last_name':
@@ -371,6 +371,15 @@ class ProfileView(APIView):
                 user.fb_location = request.data['fb_location']
             if key == 'fb_birthdate':
                 user.fb_birthdate = request.data['fb_birthdate']
+            if key == 'personality_insights_input_url':
+                if user.personality_insights_input_url != None:
+                    user.personality_insights_input_url.storage.delete(user.personality_insights_input_url.name)
+                user.personality_insights_input_url = request.FILES['personality_insights_input_url']
+            if key == 'personality_insights_output_url':
+                if user.personality_insights_output_url != None:
+                    user.personality_insights_output_url.storage.delete(user.personality_insights_output_url.name)
+                user.personality_insights_output_url = request.FILES['personality_insights_output_url']
+
 
         user.save()
 
@@ -469,7 +478,7 @@ class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
-        return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
+        # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
         # user = SpaceoutUser.objects.get(id=2)
         # return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
@@ -483,6 +492,9 @@ class DebugView(GenericAPIView):
         # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)
+
+        room = SpaceoutRoom.objects.get(user_id=2)
+        return Response(SpaceoutRoomSerializer(room).data)
 
         # rooms = SpaceoutRoom.objects.all()
         # return Response(SpaceoutRoomSerializer(rooms, many=True).data)

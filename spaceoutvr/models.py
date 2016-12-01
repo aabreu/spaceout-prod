@@ -8,7 +8,6 @@ from spaceoutvr.storage import CommentsStorage, WatsonStorage
 import datetime
 
 def comment_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     now = datetime.datetime.utcnow()
     name = now.strftime("%H_%M_%S_%f")
     return '{0}_{1}_{2}_{3}_{4}.wav'.format(
@@ -19,8 +18,7 @@ def comment_directory_path(instance, filename):
         name,
     )
 
-def watson_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+def alchemy_directory_path(instance, filename):
     now = datetime.datetime.utcnow()
     name = now.strftime("%H_%M_%S_%f")
     return '{0}_{1}_{2}_{3}_{4}.txt'.format(
@@ -31,11 +29,20 @@ def watson_directory_path(instance, filename):
         name,
     )
 
+def personality_insights_input_directory_path(instance, filename):
+    return 'PI_INPUT_{0}.txt'.format(
+        instance.id,
+    )
+
+def personality_insights_output_directory_path(instance, filename):
+    return 'PI_OUTPUT_{0}.txt'.format(
+        instance.id,
+    )
+
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='')
     latitude = models.CharField(max_length=30, default='')
     longitude = models.CharField(max_length=30, default='')
-    personality_insights = models.TextField(max_length=2048, null=True)
     notification_id = models.CharField(max_length=256, default='')
     facebook_id = models.CharField(max_length=128, default='')
     reddit_id = models.CharField(max_length=128, default='')
@@ -45,7 +52,8 @@ class SpaceoutUser(EmailAbstractUser):
     fb_location = models.CharField(max_length=128, default='')
     fb_birthdate = models.CharField(max_length=16, default='')
 
-    # notifications = models.ManyToManyField('SpaceoutNotification')
+    personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True)
+    personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True)
 
     # Required
     objects = EmailUserManager()
@@ -167,7 +175,7 @@ class WatsonInput(models.Model):
     chunk_date_end = models.DateField()
     data_size = models.FloatField()
     social_network = models.IntegerField(default=0, choices=SOCIAL_NETWORK_TYPES)
-    input_url = models.FileField(upload_to=watson_directory_path, default=None, storage=WatsonStorage())
+    input_url = models.FileField(upload_to=alchemy_directory_path, default=None, storage=WatsonStorage())
     watson_response_time = models.FloatField()
 
     user = models.ForeignKey(

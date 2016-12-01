@@ -13,15 +13,16 @@ class IBMObjectStorage(Storage):
     container = ''
     container_ready = False
     token_url = 'https://identity.open.softlayer.com/v3/auth/tokens'
-    token = ''
+    token = None
     api_url = "https://dal.objectstorage.open.softlayer.com/v1/AUTH_%s/%s/%s"
     # https://<access point>/<API version>/AUTH_<project ID>/<container namespace>/<object namespace>
 
-    def __init__(self, option=None):
-        if settings.SPACEOUT_STORE_COMMENTS:
-            self.get_token()
-            self.config_container()
-            self.check_token()
+    # def __init__(self, option=None):
+    #     if settings.SPACEOUT_STORE_COMMENTS:
+    #         if not self.container_ready:
+    #             self.get_token()
+    #             self.config_container()
+    #             self.check_token()
 
     def _open(self, name, mode='rb'):
         pass
@@ -86,6 +87,13 @@ class IBMObjectStorage(Storage):
             self.token = r.headers['X-Subject-Token']
 
     def check_token(self):
+        # get token
+        if self.token == None:
+            self.get_token()
+        # config container
+        if not self.container_ready:
+            self.config_container()
+        # renew token
         if self.expires_at - datetime.now() < timedelta(minutes = 1):
             print("REGENERATING TOKEN %s " % (self.expires_at - datetime.now()))
             self.get_token()
@@ -96,12 +104,12 @@ class IBMObjectStorage(Storage):
         if self.container == None:
             return
         if settings.SPACEOUT_STORE_COMMENTS:
-            self.check_token()
+            # self.check_token()
             print("INITIALIZING CONTAINER %s" % self.container)
             headers = {'X-Container-Read':'.r:*', 'X-Auth-Token':self.token}
             url = self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, self.container, "")
             r = requests.post(url, headers=headers)
-            self.container_ready = r.status_code == 200
+            self.container_ready = r.status_code == 200 or r.status_code == 204
 
 
 @deconstructible

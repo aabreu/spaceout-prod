@@ -11,7 +11,7 @@ class SpaceoutUserAdmin(EmailUserAdmin):
         #                                'is_superuser', 'is_verified',
         #                                'groups', 'user_permissions')}),
         # ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        ('SpaceoutVR', {'fields': ('phone_number', 'latitude', 'longitude', 'notification_id', 'facebook_id', 'twitter_id', 'soundcloud_id', 'reddit_id', 'fb_gender', 'fb_birthdate', 'fb_location')}),
+        ('SpaceoutVR', {'fields': ('phone_number', 'latitude', 'longitude', 'notification_id', 'facebook_id', 'twitter_id', 'soundcloud_id', 'reddit_id', 'fb_gender', 'fb_birthdate', 'fb_location', 'personality_insights_input_url', 'personality_insights_output_url')}),
     )
     model = SpaceoutUser
 
@@ -52,7 +52,7 @@ class WatsonInputAdmin(admin.ModelAdmin):
     def temrs_count(self, instance):
         return instance.watsonoutput_set.all().count()
 
-    list_display = ('user', 'recipe_id', 'social_network', 'chunk_id',  'temrs_count', 'data_size', 'watson_response_time', 'input_url',)
+    list_display = ('user', 'recipe_id', 'social_network', 'chunk_id',  'temrs_count', 'data_size', 'watson_response_time', 'input_url')
     fields = ('user', 'recipe_id', 'social_network', 'chunk_id', 'data_size', 'watson_response_time', 'chunk_date_start', 'chunk_date_end', 'input_url')
     inlines = (WatsonOutputInline,)
 
