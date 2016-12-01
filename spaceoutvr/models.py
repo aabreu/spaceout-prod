@@ -56,8 +56,8 @@ class SpaceoutUser(EmailAbstractUser):
     last_activity = models.DateTimeField(default=timezone.now)
     popularity = models.IntegerField(default=0)
 
-    personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), blank=True)
-    personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), blank=True)
+    personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
+    personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
 
     # Required
     objects = EmailUserManager()
