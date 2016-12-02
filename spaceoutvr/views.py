@@ -495,11 +495,15 @@ class WatsonView(APIView):
 
 class OnLineView(APIView):
     # permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
+        return self.query(request, request.query_params['page_size'], request.query_params['page'])
+    def post(self, request, format=None):
+        return self.query(request, request.data['page_size'], request.data['page'])
+
+    def query(self, request, page_size, page):
         users = SpaceoutUser.objects.order_by('-last_activity')
 
-        page_size = request.query_params['page_size']
-        page = request.query_params['page']
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
@@ -516,14 +520,17 @@ class OnLineView(APIView):
                                      context=serializer_context)
         return Response(serializer.data)
 
-
 class PopularView(APIView):
     # permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
+        return self.query(request, request.query_params['page_size'], request.query_params['page'])
+    def post(self, request, format=None):
+        return self.query(request, request.data['page_size'], request.data['page'])
+
+    def query(self, request, page_size, page):
         users = SpaceoutUser.objects.order_by('-popularity')
 
-        page_size = request.query_params['page_size']
-        page = request.query_params['page']
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
@@ -544,11 +551,15 @@ class PopularView(APIView):
 
 class FeaturedView(APIView):
     # permission_classes = (IsAuthenticated,)
+
     def get(self, request, format=None):
+        return self.query(request, request.query_params['page_size'], request.query_params['page'])
+    def post(self, request, format=None):
+        return self.query(request, request.data['page_size'], request.data['page'])
+
+    def query(self, request, page_size, page):
         users = SpaceoutUser.objects.filter(featured=True)
 
-        page_size = request.query_params['page_size']
-        page = request.query_params['page']
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 
         try:
