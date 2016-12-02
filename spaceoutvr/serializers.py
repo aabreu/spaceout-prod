@@ -32,11 +32,12 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     personality_insights_output_url = serializers.SerializerMethodField()
     featured_input_url = serializers.SerializerMethodField()
     featured_page_url = serializers.CharField()
+    avatar_url = serializers.CharField()
 
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'email', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id', 'last_activity', 'popularity',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url', 'featured_input_url', 'featured_page_url')
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url', 'featured_input_url', 'featured_page_url', 'avatar_url')
 
     depth = 2
 
@@ -109,6 +110,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     featured = serializers.BooleanField()
     featured_page_url = serializers.CharField()
     featured_input_url = serializers.SerializerMethodField()
+    avatar_url = serializers.CharField()
     personality_insights_output_url = serializers.SerializerMethodField()
     last_activity = serializers.DateTimeField()
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
@@ -116,7 +118,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
         model = SpaceoutUser
         fields = ('id', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
-                  'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url',
+                  'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url', 'avatar_url',
                   'personality_insights_output_url', 'last_activity',
                   'spaceoutroom_set')
 
