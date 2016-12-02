@@ -40,6 +40,11 @@ def personality_insights_output_directory_path(instance, filename):
         instance.id,
     )
 
+def featured_directory_path(instance, filename):
+    return 'FEATURED_{0}.txt'.format(
+        instance.id,
+    )
+
 class SpaceoutUser(EmailAbstractUser):
     phone_number = models.CharField(max_length=30, default='', blank=True)
     latitude = models.CharField(max_length=30, default='', blank=True)
@@ -58,7 +63,8 @@ class SpaceoutUser(EmailAbstractUser):
 
     personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
     personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
-    featured_input_url = models.FileField(default=None, storage=WatsonStorage(), null=True, blank=True)
+    featured_input_url = models.FileField(upload_to=featured_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
+    featured_page_url = models.CharField(max_length=256, default='', blank=True)
 
     # Required
     objects = EmailUserManager()

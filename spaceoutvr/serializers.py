@@ -31,11 +31,12 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     featured = serializers.BooleanField()
     personality_insights_output_url = serializers.SerializerMethodField()
     featured_input_url = serializers.SerializerMethodField()
+    featured_page_url = serializers.CharField()
 
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'email', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id', 'last_activity', 'popularity',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url', 'featured_input_url')
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url', 'featured_input_url', 'featured_page_url')
 
     depth = 2
 
@@ -91,6 +92,9 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     def get_personality_insights_output_url(self, user):
         return user.personality_insights_output_url.storage.url(user.personality_insights_output_url.name)
 
+    def get_featured_input_url(self, user):
+        return user.featured_input_url.storage.url(user.featured_input_url.name)
+
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -102,15 +106,17 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     latitude = serializers.CharField()
     longitude = serializers.CharField()
     notification_id = serializers.CharField()
+    featured = serializers.BooleanField()
+    featured_page_url = serializers.CharField()
+    featured_input_url = serializers.SerializerMethodField()
     personality_insights_output_url = serializers.SerializerMethodField()
     last_activity = serializers.DateTimeField()
-    featured = serializers.BooleanField()
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
-                  'fb_gender', 'fb_location', 'fb_birthdate',
+                  'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url',
                   'personality_insights_output_url', 'last_activity',
                   'spaceoutroom_set')
 
