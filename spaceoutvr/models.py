@@ -58,6 +58,7 @@ class SpaceoutUser(EmailAbstractUser):
 
     personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
     personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
+    featured_input_url = models.FileField(default=None, storage=WatsonStorage(), null=True, blank=True)
 
     # Required
     objects = EmailUserManager()

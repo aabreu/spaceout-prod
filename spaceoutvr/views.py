@@ -259,7 +259,12 @@ class RoomView(APIView):
             user = SpaceoutUser.objects.get(id=request.query_params['user_id'])
             room = user.spaceoutroom_set.first()
             if room == None:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                roomDefinition = SpaceoutRoomDefinition.objects.get(
+                    type=SpaceoutRoomDefinition.ROOM_TYPE_HOME
+                )
+                room = SpaceoutRoom(user_id=user.id)
+                room.definition = roomDefinition
+                room.save()
 
             return Response(SpaceoutRoomSerializer(room).data)
         except:
@@ -350,6 +355,16 @@ class ProfileView(APIView):
         user = request.user
         user.last_activity = datetime.now()
         user.save()
+
+        room = user.spaceoutroom_set.first()
+        if room == None:
+            roomDefinition = SpaceoutRoomDefinition.objects.get(
+                type=SpaceoutRoomDefinition.ROOM_TYPE_HOME
+            )
+            room = SpaceoutRoom(user_id=user.id)
+            room.definition = roomDefinition
+            room.save()
+
         return Response(self.serializer_class(user).data)
 
     def post(self, request, format=None):
@@ -592,11 +607,11 @@ class DebugView(GenericAPIView):
         # return super(ListAPIView, self)
 
         # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
-        # user = SpaceoutUser.objects.all()
-        # return Response(SpaceoutUserSerializer(user, many=True).data)
+        user = SpaceoutUser.objects.all()
+        return Response(SpaceoutUserSerializer(user, many=True).data)
 
-        room = SpaceoutRoom.objects.get(user_id=2)
-        return Response(SpaceoutRoomSerializer(room).data)
+        # room = SpaceoutRoom.objects.get(user_id=2)
+        # return Response(SpaceoutRoomSerializer(room).data)
 
         # rooms = SpaceoutRoom.objects.all()
         # return Response(SpaceoutRoomSerializer(rooms, many=True).data)
