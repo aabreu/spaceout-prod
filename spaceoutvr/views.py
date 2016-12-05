@@ -35,6 +35,7 @@ from spaceoutvr.notifications import OneSignalNotifications
 import hashlib
 from datetime import datetime
 import json
+import requests
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -592,6 +593,16 @@ class FeaturedView(APIView):
         serializer = PeopleSeriaizer(result,
                                      context=serializer_context)
         return Response(serializer.data)
+
+class SearchView(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        query = request.query_params['q']
+        url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_SEARCH_API_KEY)
+        r = requests.get(url)
+        return Response(r.json())
+
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer

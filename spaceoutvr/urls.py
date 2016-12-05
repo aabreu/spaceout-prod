@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^api/accounts/content/$', views.ContentView.as_view(), name='content'),
     url(r'^api/accounts/notifications/$', views.NotificationsView.as_view(), name='notifications'),
     url(r'^api/accounts/watson/$', views.WatsonView.as_view(), name='watson'),
+    url(r'^api/accounts/search/$', views.SearchView.as_view(), name='search'),
     url(r'^api/accounts/debug/$', views.DebugView.as_view(), name='debug'),
 
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
