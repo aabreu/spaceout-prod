@@ -375,7 +375,7 @@ class ProfileView(APIView):
         for key in request.data:
             print(key)
             if key == 'facebook_id':
-                if user.facebook_id == None:
+                if user.facebook_id == None or user.facebook_id == '':
                     user.facebook_id = request.data['facebook_id']
             if key == 'reddit_id':
                 user.reddit_id = request.data['reddit_id']
