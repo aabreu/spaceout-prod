@@ -94,10 +94,12 @@ class SpaceoutRoom(models.Model):
     )
 
 class SpaceoutContent(models.Model):
+    CONTENT_TYPE_NONE = -1
     CONTENT_TYPE_GIF = 0
     CONTENT_TYPE_IMAGE = 1
     CONTENT_TYPE_VIDEO = 2
     CONTENT_TYPES = (
+     (CONTENT_TYPE_NONE, 'None'),
      (CONTENT_TYPE_GIF, 'Gif'),
      (CONTENT_TYPE_IMAGE, 'Image'),
      (CONTENT_TYPE_VIDEO, 'Video'),
