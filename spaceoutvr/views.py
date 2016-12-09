@@ -482,6 +482,7 @@ class WatsonView(APIView):
             chunk_date_start = request.data['start_date'],
             chunk_date_end = request.data['end_date'],
             data_size = request.data['data_size'],
+            social_network = request.data['social_network'],
             watson_response_time = request.data['watson_response_time'],
             input_url=request.FILES['input'],
         )

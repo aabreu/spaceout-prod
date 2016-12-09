@@ -180,6 +180,7 @@ class WatsonInput(models.Model):
     WATSON_RECIPE_REDDIT_UPVOTES = 6
     WATSON_RECIPE_REDDIT_SAVED = 7
     WATSON_RECIPE_SOUNDCLOUD_BIO = 8
+    WATSON_RECIPE_TWITTER_TWEETS = 9
     WATSON_RECIPE_TYPE = (
      (WATSON_RECIPE_FB_LIKES, 'Likes'),
      (WATSON_RECIPE_FB_SHARES, 'Shares'),
@@ -190,6 +191,7 @@ class WatsonInput(models.Model):
      (WATSON_RECIPE_REDDIT_UPVOTES, 'Upvotes'),
      (WATSON_RECIPE_REDDIT_SAVED, 'Saved'),
      (WATSON_RECIPE_SOUNDCLOUD_BIO, 'Bio'),
+     (WATSON_RECIPE_TWITTER_TWEETS, 'Tweets'),
     )
 
     recipe_id = models.IntegerField(choices=WATSON_RECIPE_TYPE)
