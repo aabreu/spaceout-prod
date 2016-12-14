@@ -31,7 +31,11 @@ def add_subscriber(sender, instance, *args, **kwargs):
     # add a notification for each user in the comment thread
     # members = SpaceoutContent.objects.filter(commenters__id = 1)
     members = instance.content.members()
+    # since room owners are not members of the content thread, at least they actually comment
+    # we need to add the room owner to the list, so he receives the notification too
+    members.add(instance.content.room.user)
     for member in members:
+        # print("member = %s, author = %s " % (member.id, instance.author.id))
         if member.id != instance.author.id:
             notification = SpaceoutNotification()
             notification.type = SpaceoutNotification.NOTIFICATION_TYPE_COMMENT
