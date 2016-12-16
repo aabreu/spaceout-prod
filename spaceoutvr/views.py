@@ -609,7 +609,7 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
         # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
-        # user = SpaceoutUser.objects.get(id=2)
+        user = SpaceoutUser.objects.get(id=27)
         # return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
@@ -619,9 +619,9 @@ class DebugView(GenericAPIView):
         # queryset = user.notifications.all()
         # return super(ListAPIView, self)
 
-        # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
-        user = SpaceoutUser.objects.all()
-        return Response(SpaceoutUserSerializer(user, many=True).data)
+        return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
+        # user = SpaceoutUser.objects.all()
+        # return Response(SpaceoutUserSerializer(user, many=True).data)
 
         # room = SpaceoutRoom.objects.get(user_id=2)
         # return Response(SpaceoutRoomSerializer(room).data)
