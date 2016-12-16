@@ -374,7 +374,7 @@ class ProfileView(APIView):
 
         for key in request.data:
             if key == 'facebook_id':
-                if user.facebook_id == None or user.facebook_id == '':
+                if request.data['facebook_id'] != None or request.data['facebook_id'] != '':
                     user.facebook_id = request.data['facebook_id']
             if key == 'reddit_id':
                 user.reddit_id = request.data['reddit_id']
@@ -399,7 +399,9 @@ class ProfileView(APIView):
             if key == 'fb_birthdate':
                 user.fb_birthdate = request.data['fb_birthdate']
             if key == 'avatar_url' and not user.featured:
+                print(">>>> %s" % request.data['avatar_url'])
                 user.avatar_url = request.data['avatar_url']
+                print(">>>> %s" % user.avatar_url)
             if key == 'personality_insights_input_url':
                 if user.personality_insights_input_url != None:
                     user.personality_insights_input_url.storage.delete(user.personality_insights_input_url.name)
