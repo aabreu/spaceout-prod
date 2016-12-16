@@ -170,7 +170,7 @@ DEFAULT_EMAIL_BCC = ''
 DEFAULT_EMAIL_FROM = ''
 
 GOOGLE_SEARCH_ENGINE_ID = "&cx=006816680771764323813:srygeqcrtpc"
-GOOGLE_SEARCH_URL = "&fileType=png+jpg&searchType=image&filter=1&imgSize=medium"
+GOOGLE_SEARCH_URL = "&fileType=png+jpg&searchType=image&filter=1"
 GOOGLE_SEARCH_API_KEY = "&key=AIzaSyB1znKUQ7ox4y-9F67pS9wY0ZlPDUjS-4E"
 GOOGLE_SEARCH_BASE_URL = "https://www.googleapis.com/customsearch/v1"
 
