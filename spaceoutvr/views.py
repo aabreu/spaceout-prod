@@ -619,7 +619,8 @@ class DebugView(GenericAPIView):
         # queryset = user.notifications.all()
         # return super(ListAPIView, self)
 
-        return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
+        return Response(SpaceoutUserNotificationsSerializer(user).data)
+        # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)
 
