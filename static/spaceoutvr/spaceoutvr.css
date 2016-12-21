@@ -1,0 +1,67 @@
+h1{
+    font-family: 'Orbitron', sans-serif;
+    color:#ED2978;
+    font-size:40pt;
+}
+
+.container{
+    padding-top:30px;
+}
+
+.col-md-6, .col-sm-12{
+    text-align:center;
+}
+
+.success{
+    padding-top:120px;
+}
+
+.login-button{
+    color:#f0f;
+    background-color: #ED2978;
+    margin-left:28%;
+    margin-right:28%;
+    margin-top:30px;
+    text-align:center;
+    font-size:30pt;
+    font-family: 'Orbitron', sans-serif;
+}
+
+a, a:hover, a:visited{
+    color:#fff;
+}
+
+a.email, a.email:hover, a.email:visited{
+    color:#ED2978;
+}
+
+.login-button-big{
+    font-size:30pt;
+}
+
+.login-button-small{
+    font-size:20pt;
+    margin:0;
+    padding:0;
+}
+.footer{
+    margin-top:70px;
+}
+
+input{
+    border-color: #ED2978;
+    padding:3px;
+    margin:10px;
+    font-size:20pt;
+    width:50%;
+    border-style: solid;
+}
+
+button[type=submit] {
+    background:#ED2978;
+    color:#fff;
+    font-family: 'Orbitron', sans-serif;
+    border:0 none;
+    cursor:pointer;
+    padding:10px;
+}
