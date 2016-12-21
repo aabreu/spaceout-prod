@@ -38,11 +38,6 @@ from datetime import datetime
 import json
 import requests
 
-
-def static_url(filename):
-    storage = MiscStorage()
-    return storage.url(filename)
-
 class LandingView(TemplateView):
     template_name = 'landing.html'
 
@@ -606,7 +601,7 @@ class SearchView(APIView):
     def get(self, request, format=None):
         query = request.query_params['q']
         url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_SEARCH_API_KEY)
-        r = requests.get(url)
+        r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
         return Response(r.json())
 
 
