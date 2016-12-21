@@ -38,6 +38,11 @@ from datetime import datetime
 import json
 import requests
 
+
+def static_url(filename):
+    storage = MiscStorage()
+    return storage.url(filename)
+
 class LandingView(TemplateView):
     template_name = 'landing.html'
 

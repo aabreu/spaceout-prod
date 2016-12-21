@@ -15,7 +15,6 @@ from imp import reload
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -26,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECUREKEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 IS_LOCAL = False
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 if IS_LOCAL:
     reload(sys)
@@ -152,12 +151,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_URL = 'http://spaceoutvr-static.mybluemix.net/'
 
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
+if IS_LOCAL:
+    STATIC_ROOT = '../spaceoutvr-static'
+
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static'),
+    )
+
 
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # MEDIA_URL = '/media/'
@@ -200,6 +202,7 @@ LOGGING = {
 OBJECT_STORAGE_PROJECT_ID = '000d40f501d24442a0e152e3d285a79d'
 OBJECT_STORAGE_USER_ID = '0b288ba024754160b0e904842fe32ce8'
 OBJECT_STORAGE_PASSWORD = 'it-kDXeduV5x]0gP'
+
 OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-prod'
 OBJECT_STORAGE_WATSON_CONTAINER = 'watson-prod'
 OBJECT_STORAGE_MISC_CONTAINER = 'misc-prod'
@@ -208,3 +211,6 @@ if(IS_LOCAL):
     OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-local'
     OBJECT_STORAGE_WATSON_CONTAINER = 'watson-local'
     OBJECT_STORAGE_MISC_CONTAINER = 'misc-local'
+
+# STATICFILES_STORAGE = 'spaceoutvr.storage.StaticStorage'
+# STATIC_URL = "https://dal.objectstorage.open.softlayer.com/v1/AUTH_%s/%s/" % (OBJECT_STORAGE_PROJECT_ID, OBJECT_STORAGE_STATIC_CONTAINER)
