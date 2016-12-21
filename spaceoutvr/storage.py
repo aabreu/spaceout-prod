@@ -15,6 +15,7 @@ class IBMObjectStorage(Storage):
     token_url = 'https://identity.open.softlayer.com/v3/auth/tokens'
     token = None
     api_url = "https://dal.objectstorage.open.softlayer.com/v1/AUTH_%s/%s/%s"
+    is_private = False
     # https://<access point>/<API version>/AUTH_<project ID>/<container namespace>/<object namespace>
 
     # def __init__(self, option=None):
@@ -107,7 +108,10 @@ class IBMObjectStorage(Storage):
         if settings.SPACEOUT_STORE_COMMENTS:
             # self.check_token()
             print("INITIALIZING CONTAINER %s" % self.container)
-            headers = {'X-Container-Read':'.r:*', 'X-Auth-Token':self.token}
+            if self.is_private:
+                headers = {'X-Container-Read':'', 'X-Auth-Token':self.token}
+            else:
+                headers = {'X-Container-Read':'.r:*', 'X-Auth-Token':self.token}
             url = self.api_url % (settings.OBJECT_STORAGE_PROJECT_ID, self.container, "")
             r = requests.post(url, headers=headers)
             self.container_ready = r.status_code == 200 or r.status_code == 204
@@ -123,4 +127,12 @@ class CommentsStorage(IBMObjectStorage):
 class WatsonStorage(IBMObjectStorage):
     def config_container(self):
         self.container = settings.OBJECT_STORAGE_WATSON_CONTAINER
+        # PRIVATE CONTAINER DO NOT SET PUBLIC!
+        # self.is_private = True
         super(WatsonStorage, self).config_container()
+
+@deconstructible
+class MiscStorage(IBMObjectStorage):
+    def config_container(self):
+        self.container = settings.OBJECT_STORAGE_MISC_CONTAINER
+        super(MiscStorage, self).config_container()

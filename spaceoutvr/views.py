@@ -29,8 +29,9 @@ from spaceoutvr.serializers import SpaceoutCommentSerializer, SpaceoutContentSer
 from spaceoutvr.serializers import SpaceoutUserNotificationsSerializer, SpaceoutUserSimpleSerializer
 from spaceoutvr.serializers import WatsonBlacklistSerializer, PeopleSeriaizer
 from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, SpaceoutRoomDefinition, SpaceoutComment, SpaceoutNotification
-from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist
+from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, personality_insights_output_directory_path, featured_directory_path
 from spaceoutvr.notifications import OneSignalNotifications
+from spaceoutvr.storage import WatsonStorage, MiscStorage
 
 import hashlib
 from datetime import datetime
@@ -608,8 +609,48 @@ class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
+
+        watson_storage = WatsonStorage()
+        misc_storage = MiscStorage()
+
+        users = SpaceoutUser.objects.all()
+        for user in users:
+            file_name = personality_insights_output_directory_path(user, "")
+            print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
+            if watson_storage.exists(file_name):
+                url = watson_storage.url(file_name)
+                print("downloading %s" % url)
+                f = requests.get(url)
+                print("downloaded %s bytes" % len(f.content))
+                misc_storage._save(file_name, f.content)
+                watson_storage.delete(file_name)
+
+            file_name = featured_directory_path(user, "")
+            print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
+            if watson_storage.exists(file_name):
+                url = watson_storage.url(file_name)
+                print("downloading %s" % url)
+                f = requests.get(url)
+                print("downloaded %s bytes" % len(f.content))
+                misc_storage._save(file_name, f.content)
+
+            # print(watson_storage.url(personality_insights_input_directory_path(user, "")))
+
+        return Response(status=status.HTTP_200_OK)
+
+        # first_name = "Test"
+        # last_name = "Doe"
+        # email = "agustinabreu+test@gmail.com"
+        # password = "fidelio"
+        #
+        # account = wrapper.Authemail()
+        # account.base_uri = "%s/api" % settings.SERVER_URL
+        # response = account.signup(first_name=first_name, last_name=last_name,
+        #     email=email, password=password)
+
+
         # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
-        user = SpaceoutUser.objects.get(id=27)
+
         # return Response(SpaceoutUserSerializer(user).data)
         # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # serializer_class = SpaceoutNotificationSerializer
@@ -619,7 +660,8 @@ class DebugView(GenericAPIView):
         # queryset = user.notifications.all()
         # return super(ListAPIView, self)
 
-        return Response(SpaceoutUserNotificationsSerializer(user).data)
+        # user = SpaceoutUser.objects.get(id=27)
+        # return Response(SpaceoutUserNotificationsSerializer(user).data)
         # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
         # user = SpaceoutUser.objects.all()
         # return Response(SpaceoutUserSerializer(user, many=True).data)

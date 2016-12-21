@@ -4,7 +4,7 @@ from django.utils import timezone
 from authemail.models import EmailUserManager, EmailAbstractUser
 
 from spaceoutvr_django import settings
-from spaceoutvr.storage import CommentsStorage, WatsonStorage
+from spaceoutvr.storage import CommentsStorage, WatsonStorage, MiscStorage
 
 import datetime
 
@@ -62,8 +62,8 @@ class SpaceoutUser(EmailAbstractUser):
     popularity = models.IntegerField(default=0)
 
     personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
-    personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
-    featured_input_url = models.FileField(upload_to=featured_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
+    personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=MiscStorage(), null=True, blank=True)
+    featured_input_url = models.FileField(upload_to=featured_directory_path, default=None, storage=MiscStorage(), null=True, blank=True)
     featured_page_url = models.CharField(max_length=256, default='', blank=True)
     avatar_url = models.CharField(max_length=256, default='', blank=True)
 
