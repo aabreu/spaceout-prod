@@ -128,7 +128,7 @@ class WatsonStorage(IBMObjectStorage):
     def config_container(self):
         self.container = settings.OBJECT_STORAGE_WATSON_CONTAINER
         # PRIVATE CONTAINER DO NOT SET PUBLIC!
-        # self.is_private = True
+        self.is_private = True
         super(WatsonStorage, self).config_container()
 
 @deconstructible
