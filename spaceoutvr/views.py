@@ -609,7 +609,7 @@ class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
-
+        pass
         # watson_storage = WatsonStorage()
         # misc_storage = MiscStorage()
         #
