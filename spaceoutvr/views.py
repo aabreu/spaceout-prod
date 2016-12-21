@@ -610,33 +610,33 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
 
-        watson_storage = WatsonStorage()
-        misc_storage = MiscStorage()
-
-        users = SpaceoutUser.objects.all()
-        for user in users:
-            file_name = personality_insights_output_directory_path(user, "")
-            print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
-            if watson_storage.exists(file_name):
-                url = watson_storage.url(file_name)
-                print("downloading %s" % url)
-                f = requests.get(url)
-                print("downloaded %s bytes" % len(f.content))
-                misc_storage._save(file_name, f.content)
-                watson_storage.delete(file_name)
-
-            file_name = featured_directory_path(user, "")
-            print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
-            if watson_storage.exists(file_name):
-                url = watson_storage.url(file_name)
-                print("downloading %s" % url)
-                f = requests.get(url)
-                print("downloaded %s bytes" % len(f.content))
-                misc_storage._save(file_name, f.content)
-
-            # print(watson_storage.url(personality_insights_input_directory_path(user, "")))
-
-        return Response(status=status.HTTP_200_OK)
+        # watson_storage = WatsonStorage()
+        # misc_storage = MiscStorage()
+        #
+        # users = SpaceoutUser.objects.all()
+        # for user in users:
+        #     file_name = personality_insights_output_directory_path(user, "")
+        #     print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
+        #     if watson_storage.exists(file_name):
+        #         url = watson_storage.url(file_name)
+        #         print("downloading %s" % url)
+        #         f = requests.get(url)
+        #         print("downloaded %s bytes" % len(f.content))
+        #         misc_storage._save(file_name, f.content)
+        #         watson_storage.delete(file_name)
+        #
+        #     file_name = featured_directory_path(user, "")
+        #     print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
+        #     if watson_storage.exists(file_name):
+        #         url = watson_storage.url(file_name)
+        #         print("downloading %s" % url)
+        #         f = requests.get(url)
+        #         print("downloaded %s bytes" % len(f.content))
+        #         misc_storage._save(file_name, f.content)
+        #
+        #     # print(watson_storage.url(personality_insights_input_directory_path(user, "")))
+        #
+        # return Response(status=status.HTTP_200_OK)
 
         # first_name = "Test"
         # last_name = "Doe"
