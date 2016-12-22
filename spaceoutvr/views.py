@@ -607,15 +607,14 @@ class SearchView(APIView):
                 heading = request.query_params['h']
                 pitch = request.query_params['p']
                 url = settings.STREET_VIEW_API_URL % (lat, lon, fov, heading, pitch, settings.GOOGLE_API_KEY)
+                r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
+                return HttpResponse(r, content_type="image/jpeg")
+            elif request.query_params['s'] == 'y':
+                query = request.query_params['q']
+                url = settings.YOUTUBE_SEARCH_URL % (query, settings.GOOGLE_API_KEY)
                 print(url)
                 r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
-                return HttpResponse(r.text, content_type="image/jpeg")
-                # print(r.text)
-                # return Response(r.json())
-                return r
-            elif request.query_params['s'] == 'y':
-                url = "youtube"
-                return Response(url)
+                return Response(r.json())
         else:
             query = request.query_params['q']
             url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_API_KEY)

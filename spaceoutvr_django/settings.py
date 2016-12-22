@@ -186,7 +186,9 @@ GOOGLE_SEARCH_ENGINE_ID = "&cx=006816680771764323813:srygeqcrtpc"
 GOOGLE_SEARCH_URL = "&fileType=png+jpg&searchType=image&filter=1"
 GOOGLE_SEARCH_BASE_URL = "https://www.googleapis.com/customsearch/v1"
 
-STREET_VIEW_API_URL = "http://maps.googleapis.com/maps/api/streetview?size=512x512&location=%s,%s&fov=%s&heading=%s&pitch=%s&key=%s"
+STREET_VIEW_API_URL = "http://maps.googleapis.com/maps/api/streetview?size=512x512&location=%s,%s&fov=%s&heading=%s&pitch=%s%s"
+
+YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s%s"
 
 LOGGING = {
     'version': 1,
