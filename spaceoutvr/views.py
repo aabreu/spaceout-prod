@@ -599,11 +599,28 @@ class SearchView(APIView):
     # permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        query = request.query_params['q']
-        url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_SEARCH_API_KEY)
-        r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
-        return Response(r.json())
-
+        if 's' in request.query_params:
+            if request.query_params['s'] == 's':
+                lat = request.query_params['lat']
+                lon = request.query_params['lon']
+                fov = request.query_params['fov']
+                heading = request.query_params['h']
+                pitch = request.query_params['p']
+                url = settings.STREET_VIEW_API_URL % (lat, lon, fov, heading, pitch, settings.GOOGLE_API_KEY)
+                print(url)
+                r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
+                return HttpResponse(r.text, content_type="image/jpeg")
+                # print(r.text)
+                # return Response(r.json())
+                return r
+            elif request.query_params['s'] == 'y':
+                url = "youtube"
+                return Response(url)
+        else:
+            query = request.query_params['q']
+            url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_API_KEY)
+            r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
+            return Response(r.json())
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
@@ -647,7 +664,8 @@ class DebugView(GenericAPIView):
         # account.base_uri = "%s/api" % settings.SERVER_URL
         # response = account.signup(first_name=first_name, last_name=last_name,
         #     email=email, password=password)
-
+        #
+        # return response
 
         # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
 

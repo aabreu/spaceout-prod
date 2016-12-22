@@ -171,18 +171,22 @@ SENTRY_CLIENT = 'user_management.utils.sentry.SensitiveDjangoClient'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'do-not-reply@spaceoutvr.com'
+EMAIL_HOST_USER = 'do-not-reply@spaceoutvr.com'
+EMAIL_HOST_PASSWORD = 'faimzfcvlipfulqo'
 # EMAIL_HOST_PASSWORD = 'picklejuice'
-EMAIL_HOST_USER = 'spaceoutvrplaceholder@gmail.com'
-EMAIL_HOST_PASSWORD = 'Daydr3am10'
+# EMAIL_HOST_USER = 'spaceoutvrplaceholder@gmail.com'
+# EMAIL_HOST_PASSWORD = 'Daydr3am10'
 EMAIL_PORT = 587
 DEFAULT_EMAIL_BCC = ''
 DEFAULT_EMAIL_FROM = ''
 
+GOOGLE_API_KEY = "&key=AIzaSyBeonrqnW72dlUQnhfYwiy6lpir-S3MtLo"
+
 GOOGLE_SEARCH_ENGINE_ID = "&cx=006816680771764323813:srygeqcrtpc"
 GOOGLE_SEARCH_URL = "&fileType=png+jpg&searchType=image&filter=1"
-GOOGLE_SEARCH_API_KEY = "&key=AIzaSyBeonrqnW72dlUQnhfYwiy6lpir-S3MtLo"
 GOOGLE_SEARCH_BASE_URL = "https://www.googleapis.com/customsearch/v1"
+
+STREET_VIEW_API_URL = "http://maps.googleapis.com/maps/api/streetview?size=512x512&location=%s,%s&fov=%s&heading=%s&pitch=%s&key=%s"
 
 LOGGING = {
     'version': 1,
