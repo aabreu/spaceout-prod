@@ -383,8 +383,8 @@ class ProfileView(APIView):
                 user.soundcloud_id = request.data['soundcloud_id']
             if key == 'twitter_id':
                 user.twitter_id = request.data['twitter_id']
-            if key == 'notifications_id':
-                user.notification_id = request.data['notifications_id']
+            if key == 'notification_id':
+                user.notification_id = request.data['notification_id']
             if key == 'latitude':
                 user.latitude = request.data['latitude']
             if key == 'longitude':
