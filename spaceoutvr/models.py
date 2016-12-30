@@ -46,6 +46,7 @@ def featured_directory_path(instance, filename):
     )
 
 class SpaceoutUser(EmailAbstractUser):
+    user_name = models.CharField(max_length=30, default="", unique=True)
     phone_number = models.CharField(max_length=30, default='', blank=True)
     latitude = models.CharField(max_length=30, default='', blank=True)
     longitude = models.CharField(max_length=30, default='', blank=True)

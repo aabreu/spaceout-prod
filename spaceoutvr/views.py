@@ -55,7 +55,7 @@ class SignupView(FormView):
         account = wrapper.Authemail()
         account.base_uri = "%s/api" % settings.SERVER_URL
         response = account.signup(first_name=first_name, last_name=last_name,
-            email=email, password=password)
+                                  email=email, password=password)
 
         # Handle other error responses from API
         if 'detail' in response:

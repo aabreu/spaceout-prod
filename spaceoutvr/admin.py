@@ -6,7 +6,7 @@ from spaceoutvr.models import *
 class SpaceoutUserAdmin(EmailUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name')}),
+        ('Personal Info', {'fields': ('user_name', 'first_name', 'last_name')}),
         # ('Permissions', {'fields': ('is_active', 'is_staff',
         #                                'is_superuser', 'is_verified',
         #                                'groups', 'user_permissions')}),

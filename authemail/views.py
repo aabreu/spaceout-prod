@@ -24,11 +24,26 @@ class Signup(APIView):
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
 
+        # check unique user name
+        user_name = request.data['user_name']
+        UserModel = get_user_model()
+        try:
+            existing_user = UserModel.objects.get(user_name=user_name)
+            print("checking %s exists? %s" % (user_name, existing_user))
+            content = {'detail':
+                _('User name already exist, try a different one.')}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            #good to go
+            pass
+
+
         if serializer.is_valid():
             email = serializer.data['email']
             password = serializer.data['password']
             first_name = serializer.data['first_name']
             last_name = serializer.data['last_name']
+            user_name = serializer.data['user_name']
 
             must_validate_email = getattr(settings, "AUTH_EMAIL_VERIFICATION", True)
 
@@ -53,6 +68,8 @@ class Signup(APIView):
             user.set_password(password)
             user.first_name = first_name
             user.last_name = last_name
+            user.user_name = user_name
+
             if not must_validate_email:
                 user.is_verified = True
                 send_multi_format_email('welcome_email',
@@ -67,7 +84,7 @@ class Signup(APIView):
                 signup_code.send_signup_email()
 
             content = {'email': email, 'first_name': first_name,
-                'last_name': last_name}
+                'last_name': last_name, 'user_name': user_name}
             return Response(content, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
