@@ -99,6 +99,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
+    user_name = serializers.CharField()
     email = serializers.CharField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
