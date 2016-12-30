@@ -18,6 +18,7 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
+    user_name = serializers.CharField()
     email = serializers.CharField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
@@ -36,7 +37,7 @@ class SpaceoutUserSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpaceoutUser
-        fields = ('id', 'email', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id', 'last_activity', 'popularity',
+        fields = ('id', 'email', 'user_name', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id', 'last_activity', 'popularity',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'personality_insights_output_url', 'featured_input_url', 'featured_page_url', 'avatar_url')
 
     depth = 2
