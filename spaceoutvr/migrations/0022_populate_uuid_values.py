@@ -7,7 +7,7 @@ def gen_username(apps, schema_editor):
     k = 0
     MyModel = apps.get_model('spaceoutvr', 'SpaceoutUser')
     for row in MyModel.objects.all():
-        row.user_name = "spaceout_user_%" % k
+        row.user_name = "spaceout_user_%s" % k
         row.save()
         k = k + 1
 
