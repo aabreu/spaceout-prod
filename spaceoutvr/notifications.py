@@ -18,7 +18,7 @@ class OneSignalNotifications:
         data = data % (
             user.notification_id,
             settings.ONESIGNAL_APP_ID,
-            user.first_name
+            user.user_name
         )
 
         print("SENDING NOTIFICATION %s" % data)
