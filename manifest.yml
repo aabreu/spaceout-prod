@@ -1,5 +1,5 @@
 ---
 applications:
-- name: spaceoutvr-prod
+- name: spaceoutvr-dev
   services:
-  - Compose for PostgreSQL Production
+  - Development Database
