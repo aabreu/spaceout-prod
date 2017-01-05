@@ -23,8 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = "efhiuwehfiuwehfiuehuighiowejfioewjio"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = False
-IS_LOCAL = False
+IS_LOCAL = DEBUG
+IS_DEV = False
+
 TEMPLATE_DEBUG = False
 
 if IS_LOCAL:
@@ -215,7 +218,7 @@ OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-prod'
 OBJECT_STORAGE_WATSON_CONTAINER = 'watson-prod'
 OBJECT_STORAGE_MISC_CONTAINER = 'misc-prod'
 
-if(IS_LOCAL):
+if(IS_LOCAL or IS_DEV):
     OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-local'
     OBJECT_STORAGE_WATSON_CONTAINER = 'watson-local'
     OBJECT_STORAGE_MISC_CONTAINER = 'misc-local'
