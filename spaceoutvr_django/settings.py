@@ -121,7 +121,22 @@ if IS_LOCAL:
             'PORT': '5432',
         }
     }
+elif IS_DEV:
+    # dev
+    DATABASES = {
+    	'default': {
+    		'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    		'NAME': 'zplzauwd',
+    		'USER': 'zplzauwd',
+    		'PASSWORD': 'LNkFZnLiYKIfu598mv7UnVJnTIal9zZr',
+    		'HOST': 'echo-01.db.elephantsql.com',
+    		'PORT': '5432'
+    	}
+    }
+
+
 else:
+    # production
     import json
     import dj_database_url
     DATABASES = {'default': dj_database_url.config()}
