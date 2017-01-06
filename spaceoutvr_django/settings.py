@@ -26,7 +26,7 @@ SECRET_KEY = "efhiuwehfiuwehfiuehuighiowejfioewjio"
 
 DEBUG = False
 IS_LOCAL = DEBUG
-IS_DEV = True
+IS_DEV = False
 
 TEMPLATE_DEBUG = False
 

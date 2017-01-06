@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Count
 
 from authemail import wrapper
 
@@ -40,6 +41,9 @@ import requests
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
+
+def users_with_room():
+    return SpaceoutUser.objects.annotate(num_rooms=Count('spaceoutroom')).filter(num_rooms__gt = 0)
 
 
 class SignupView(FormView):
@@ -513,7 +517,7 @@ class WatsonView(APIView):
         return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
 
 class OnLineView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         return self.query(request, request.query_params['page_size'], request.query_params['page'])
@@ -521,7 +525,8 @@ class OnLineView(APIView):
         return self.query(request, request.data['page_size'], request.data['page'])
 
     def query(self, request, page_size, page):
-        users = SpaceoutUser.objects.order_by('-last_activity')
+        # users = SpaceoutUser.objects.order_by('-last_activity')
+        users = users_with_room().order_by('-last_activity')
 
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 
@@ -540,7 +545,7 @@ class OnLineView(APIView):
         return Response(serializer.data)
 
 class PopularView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         return self.query(request, request.query_params['page_size'], request.query_params['page'])
@@ -548,7 +553,8 @@ class PopularView(APIView):
         return self.query(request, request.data['page_size'], request.data['page'])
 
     def query(self, request, page_size, page):
-        users = SpaceoutUser.objects.order_by('-popularity')
+        users = users_with_room().order_by('-popularity')
+        # users = SpaceoutUser.objects.order_by('-popularity')
 
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 
@@ -569,7 +575,7 @@ class PopularView(APIView):
 
 
 class FeaturedView(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         return self.query(request, request.query_params['page_size'], request.query_params['page'])
@@ -577,7 +583,8 @@ class FeaturedView(APIView):
         return self.query(request, request.data['page_size'], request.data['page'])
 
     def query(self, request, page_size, page):
-        users = SpaceoutUser.objects.filter(featured=True)
+        users = users_with_room().filter(featured=True)
+        # users = SpaceoutUser.objects.filter(featured=True)
 
         paginator = Paginator(users, page_size) # Show 25 contacts per page
 

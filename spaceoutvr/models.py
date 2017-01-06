@@ -71,6 +71,9 @@ class SpaceoutUser(EmailAbstractUser):
     # Required
     objects = EmailUserManager()
 
+    def hasRoom(self):
+        return self.spaceoutroom_set.count > 0
+
 class SpaceoutRoomDefinition(models.Model):
     ROOM_TYPE_HOME = 0
     ROOM_TYPE_360 = 1
