@@ -43,7 +43,7 @@ class LandingView(TemplateView):
     template_name = 'landing.html'
 
 def users_with_room():
-    return SpaceoutUser.objects.annotate(num_rooms=Count('spaceoutroom')).filter(num_rooms__gt = 0)
+    return SpaceoutUser.objects.annotate(count=Count('spaceoutroom__spaceoutcontent')).filter(count__gt = 0)
 
 
 class SignupView(FormView):
