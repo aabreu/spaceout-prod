@@ -4,7 +4,7 @@ import requests
 
 class OneSignalNotifications:
 
-    def send(self, user):
+    def send(self, from_user, to_user):
         url = "https://onesignal.com/api/v1/notifications"
 
         data = """{
@@ -16,9 +16,9 @@ class OneSignalNotifications:
         }"""
 
         data = data % (
-            user.notification_id,
+            to_user.notification_id,
             settings.ONESIGNAL_APP_ID,
-            user.user_name
+            from_user.user_name
         )
 
         print("SENDING NOTIFICATION %s" % data)

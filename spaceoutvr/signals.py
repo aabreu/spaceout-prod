@@ -42,6 +42,9 @@ def add_subscriber(sender, instance, *args, **kwargs):
             notification.comment = instance
             notification.user = member
             notification.save()
+            # send push notification
+            n = OneSignalNotifications()
+            n.send(notification.comment.author, member)
 
     # increase room owner's popularity
     if instance.content.room.user.id != instance.author.id:
@@ -49,8 +52,8 @@ def add_subscriber(sender, instance, *args, **kwargs):
         instance.content.room.user.save()
 
 
-@receiver(post_save, sender=SpaceoutNotification)
-def push_notification(sender, instance, created, *args, **kwargs):
-    if created:
-        n = OneSignalNotifications()
-        n.send(instance.user)
+# @receiver(post_save, sender=SpaceoutNotification)
+# def push_notification(sender, instance, created, *args, **kwargs):
+#     if created:
+#         n = OneSignalNotifications()
+#         n.send(instance.user)
