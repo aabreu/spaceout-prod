@@ -442,7 +442,7 @@ class CommentView(APIView):
         user.last_activity = datetime.now()
         user.save()
         comment = SpaceoutComment.objects.get(id=request.data['comment_id'])
-        if user.id == comment.author.id or user.id == comment.content.room.owner.id:
+        if user.id == comment.author.id or user.id == comment.content.room.user.id:
             room_id = comment.content.room.id
             content_id = comment.content.id
             comment_id = comment.id
