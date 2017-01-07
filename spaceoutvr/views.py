@@ -438,25 +438,25 @@ class CommentView(APIView):
         return Response(SpaceoutCommentSerializer(comment).data)
 
     def delete(self, request, format=None):
-        author = request.user
-        author.last_activity = datetime.now()
-        author.save()
+        user = request.user
+        user.last_activity = datetime.now()
+        user.save()
         comment = SpaceoutComment.objects.get(id=request.data['comment_id'])
-        if author.id != comment.author.id:
+        if user.id == comment.author.id or user.id == comment.content.room.owner.id:
+            room_id = comment.content.room.id
+            content_id = comment.content.id
+            comment_id = comment.id
+
+            # delete model
+            comment.delete()
+
+            return Response({
+                'comment_id':comment_id,
+                'content_id':content_id,
+                'room_id':room_id,
+            })
+        else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        room_id = comment.content.room.id
-        content_id = comment.content.id
-        comment_id = comment.id
-
-        # delete model
-        comment.delete()
-
-        return Response({
-            'comment_id':comment_id,
-            'content_id':content_id,
-            'room_id':room_id,
-        })
 
 class NotificationsView(APIView):
     permission_classes = (IsAuthenticated,)
