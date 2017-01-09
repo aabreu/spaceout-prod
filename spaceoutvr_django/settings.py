@@ -24,9 +24,9 @@ SECRET_KEY = "efhiuwehfiuwehfiuehuighiowejfioewjio"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
+DEBUG = False
 IS_LOCAL = DEBUG
-IS_DEV = False
+IS_DEV = True
 
 TEMPLATE_DEBUG = False
 
