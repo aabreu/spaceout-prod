@@ -121,42 +121,11 @@ if IS_LOCAL:
             'PORT': '5432',
         }
     }
-elif IS_DEV:
-    # dev
-    import json
-    import dj_database_url
-    print("###################### DB CONFIG #######")
-    DATABASES = {'default': dj_database_url.config()}
-
-    print(DATABASES)
-    # DATABASES = {
-    # 	'default': {
-    # 		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    # 		'NAME': 'zplzauwd',
-    # 		'USER': 'zplzauwd',
-    # 		'PASSWORD': 'LNkFZnLiYKIfu598mv7UnVJnTIal9zZr',
-    # 		'HOST': 'echo-01.db.elephantsql.com',
-    # 		'PORT': '5432'
-    # 	}
-    # }
-
-
 else:
-    # production
+    # production or dev = bluemix
     import json
     import dj_database_url
     DATABASES = {'default': dj_database_url.config()}
-    # MYSQL = json.loads(os.environ['VCAP_SERVICES'])['cleardb'][0]['credentials']
-    # DATABASES = {
-    # 	'default': {
-    # 		'ENGINE': 'django.db.backends.mysql',
-    # 		'NAME': MYSQL['name'],
-    # 		'USER': MYSQL['username'],
-    # 		'PASSWORD': MYSQL['password'],
-    # 		'HOST': MYSQL['hostname'],
-    # 		'PORT': MYSQL['port']
-    # 	}
-    # }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
