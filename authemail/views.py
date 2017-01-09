@@ -97,15 +97,22 @@ class SignupVerify(APIView):
         code = request.GET.get('code', '')
         verified = SignupCode.objects.set_user_is_verified(code)
 
+        print("VERIFIED? %s", verified)
+
         if verified:
             try:
+                print("checking code=%s", code)
                 signup_code = SignupCode.objects.get(code=code)
+                print("deletting code=%s", code)
                 signup_code.delete()
             except SignupCode.DoesNotExist:
-                pass
+                print("code does not exist code=%s", code)
+
+            print("return success for code=%s", code)
             content = {'success': _('User verified.')}
             return Response(content, status=status.HTTP_200_OK)
         else:
+            print("set_verified returns false);
             content = {'detail': _('Unable to verify user.')}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
