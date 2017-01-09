@@ -123,16 +123,19 @@ if IS_LOCAL:
     }
 elif IS_DEV:
     # dev
-    DATABASES = {
-    	'default': {
-    		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    		'NAME': 'zplzauwd',
-    		'USER': 'zplzauwd',
-    		'PASSWORD': 'LNkFZnLiYKIfu598mv7UnVJnTIal9zZr',
-    		'HOST': 'echo-01.db.elephantsql.com',
-    		'PORT': '5432'
-    	}
-    }
+    import json
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config()}
+    # DATABASES = {
+    # 	'default': {
+    # 		'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    # 		'NAME': 'zplzauwd',
+    # 		'USER': 'zplzauwd',
+    # 		'PASSWORD': 'LNkFZnLiYKIfu598mv7UnVJnTIal9zZr',
+    # 		'HOST': 'echo-01.db.elephantsql.com',
+    # 		'PORT': '5432'
+    # 	}
+    # }
 
 
 else:
