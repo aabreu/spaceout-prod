@@ -125,7 +125,10 @@ elif IS_DEV:
     # dev
     import json
     import dj_database_url
+    print("###################### DB CONFIG #######")
     DATABASES = {'default': dj_database_url.config()}
+
+    print(DATABASES)
     # DATABASES = {
     # 	'default': {
     # 		'ENGINE': 'django.db.backends.postgresql_psycopg2',
