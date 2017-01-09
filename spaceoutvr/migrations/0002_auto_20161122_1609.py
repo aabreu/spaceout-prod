@@ -6,7 +6,7 @@ from django.db import models, migrations
 from spaceoutvr.models import SpaceoutUser
 
 def create_super_user(apps, schena_editor):
-    SpaceoutUser.objects.create_superuser('aa@spaceoutvr.com', 'Daydr3am10', 'spaceoutvr')
+    SpaceoutUser.objects.create_superuser('aa@spaceoutvr.com', 'Daydr3am10', user_name='spaceoutvr')
 
 def create_room_definitions(apps, schena_editor):
     SpaceoutRoomDefinition = apps.get_model("spaceoutvr", "SpaceoutRoomDefinition")
