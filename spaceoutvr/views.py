@@ -379,14 +379,17 @@ class ProfileView(APIView):
 
         for key in request.data:
             if key == 'facebook_id':
-                if request.data['facebook_id'] != None or request.data['facebook_id'] != '':
+                if request.data['facebook_id'] != None and request.data['facebook_id'] != '':
                     user.facebook_id = request.data['facebook_id']
             if key == 'reddit_id':
-                user.reddit_id = request.data['reddit_id']
+                if request.data['reddit_id'] != None and request.data['reddit_id'] != '':
+                    user.reddit_id = request.data['reddit_id']
             if key == 'soundcloud_id':
-                user.soundcloud_id = request.data['soundcloud_id']
+                if request.data['soundcloud_id'] != None and request.data['soundcloud_id'] != '':
+                    user.soundcloud_id = request.data['soundcloud_id']
             if key == 'twitter_id':
-                user.twitter_id = request.data['twitter_id']
+                if request.data['twitter_id'] != None and request.data['twitter_id'] != '':
+                    user.twitter_id = request.data['twitter_id']
             if key == 'notification_id':
                 user.notification_id = request.data['notification_id']
             if key == 'latitude':
@@ -632,7 +635,15 @@ class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
-        pass
+
+        with_fb = SpaceoutUser.objects.all().filter(facebook_id__isnull=False).count()
+        total = SpaceoutUser.objects.all().count()
+
+        report = "{'with_fb':%s, 'total':%s, 'rate':%s}" % (with_fb, total, total / with_fb)
+
+        return Response(report)
+        # return Response(SpaceoutUserSerializer(users, many=True).data)
+        # return Response(status=status.HTTP_200_OK)
         # watson_storage = WatsonStorage()
         # misc_storage = MiscStorage()
         #
