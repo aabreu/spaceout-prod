@@ -632,7 +632,7 @@ class SearchView(APIView):
             return Response(r.json())
 
 class DebugView(GenericAPIView):
-    serializer_class = SpaceoutNotificationSerializer
+    serializer_class = SpaceoutUserSerializer
 
     def get(self, request, format=None):
 
@@ -642,8 +642,11 @@ class DebugView(GenericAPIView):
         report = "{'with_fb':%s, 'total':%s, 'rate':%s}" % (with_fb, total, total / with_fb)
 
         return Response(report)
-        # return Response(SpaceoutUserSerializer(users, many=True).data)
-        # return Response(status=status.HTTP_200_OK)
+        # users = users_with_room()
+        # total_users = SpaceoutUser.objects.all().count()
+        # with_room = users.count()
+        # result = {'with_room':with_room, 'total':total_users}
+        # return Response(result)
         # watson_storage = WatsonStorage()
         # misc_storage = MiscStorage()
         #
