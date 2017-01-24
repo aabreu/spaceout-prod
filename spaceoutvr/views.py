@@ -632,7 +632,8 @@ class DebugView(GenericAPIView):
     serializer_class = SpaceoutNotificationSerializer
 
     def get(self, request, format=None):
-        pass
+        users = users_with_room()
+        return Response(UserSerializer(users, many=True).data)
         # watson_storage = WatsonStorage()
         # misc_storage = MiscStorage()
         #
