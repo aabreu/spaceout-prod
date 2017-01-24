@@ -629,11 +629,16 @@ class SearchView(APIView):
             return Response(r.json())
 
 class DebugView(GenericAPIView):
-    serializer_class = SpaceoutNotificationSerializer
+    serializer_class = SpaceoutUserSerializer
 
     def get(self, request, format=None):
+        # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
         users = users_with_room()
-        return Response(UserSerializer(users, many=True).data)
+        total_users = SpaceoutUser.objects.all().count()
+        with_room = users.count()
+        result = {'with_room':with_room, 'total':total_users}
+        return Response(result)
+        # return Response(SpaceoutUserSerializer(users, many=True).data)
         # watson_storage = WatsonStorage()
         # misc_storage = MiscStorage()
         #
