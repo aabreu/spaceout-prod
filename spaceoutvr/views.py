@@ -631,6 +631,11 @@ class SearchView(APIView):
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
 
+class FacebookCallback(GenericAPIView):
+    def post(self, request, format=None):
+        print("FACEBOOK CALLBACK")
+        print(request)
+
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutUserSerializer
 
