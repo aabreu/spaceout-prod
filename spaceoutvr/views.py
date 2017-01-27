@@ -34,8 +34,10 @@ from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, person
 from spaceoutvr.notifications import OneSignalNotifications
 from spaceoutvr.storage import WatsonStorage, MiscStorage
 
-import hashlib
 from datetime import datetime
+
+import hashlib
+import hmac
 import json
 import requests
 
@@ -631,10 +633,96 @@ class SearchView(APIView):
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
 
-class FacebookCallback(GenericAPIView):
+class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
-        print("FACEBOOK CALLBACK")
-        print(request)
+        print("SignIn")
+        print(request.data["id"])
+        print(request.data["spacer_name"])
+        return self.signin_facebook(request.data["id"], request.data["spacer_name"])
+
+    def signin_facebook(self, access_token, spacer_name):
+        # app secret proof
+        h = hmac.new (
+            settings.FACEBOOK_SECRET.encode('utf-8'),
+            msg = access_token.encode('utf-8'),
+            digestmod = hashlib.sha256
+        )
+        appsecret_proof = h.hexdigest()
+
+        # make sure token is valid
+        api_call = "https://graph.facebook.com/me/?access_token=%s&appsecret_proof=%s&fields=id,name,email" % (access_token, appsecret_proof)
+        r = requests.get(api_call)
+        data = r.json()
+        print(data)
+        fb_id = data['id']
+        fb_email = data['email']
+
+        # SpaceoutVR account exists with that social media account?
+        try:
+            existing_user = SpaceoutUserModel.objects.get(facebook_id=fb_id)
+            # yes
+        except:
+            # no
+            # SpaceoutVR account exists with that email?
+            try:
+                existing_user = SpaceoutUserModel.objects.get(email=email)
+                # yes, merge social account to SpaceoutVR account and login
+                print("merge %s with %s" % (email, fb_id))
+                existing_user.facebook_id = fb_id
+            except:
+                # no
+                # is spacer name present?
+                if spacer_name != None:
+                    # yes, signup
+                    print("signup with spacer name %s" % (spacer_name))
+                else:
+                    # no, ask for a spacer name
+                    print("need a spacer name %s" % (spacer_name))
+                    content = {'code':'create_spacer_name'}
+                    return Response(content, status=status.HTTP_200_OK)
+
+
+        try:
+            email = data['email']
+            print("login in %s", email)
+        except:
+            # access token is not valid
+            print("access token not valid %s", access_token)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            existing_user = SpaceoutUserModel.objects.get(email=email)
+
+        except:
+            # not exist, choose spacer name
+
+        # self.login_or_signup("FACEBOOK", fb_id, access_token)
+        return Response(status=status.HTTP_200_OK)
+
+    # def login_or_signup(self, method, email, access_token):
+    #     # check unique user name
+    #     UserModel = get_user_model()
+    #
+    #     if method == "FACEBOOK":
+    #         try:
+    #             existing_user = UserModel.objects.get(facebook_id=user_id)
+    #             # login
+    #         except get_user_model().DoesNotExist:
+    #             # signup
+    #             user = get_user_model().objects.create_user(facebook_id=user_id)
+    #
+    #         user.first_name = first_name
+    #         user.last_name = last_name
+    #
+    #         user.user_name = user_name
+    #
+    #         if not must_validate_email:
+    #             user.is_verified = True
+    #             send_multi_format_email('welcome_email',
+    #                                     {'email': user.email,},
+    #                                     target_email=user.email)
+    #         user.save()
+    #
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutUserSerializer
@@ -718,17 +806,17 @@ class DebugView(GenericAPIView):
         # storage = IBMObjectStorage()
         # storage.exists("lalala")
         # return Response(status=status.HTTP_200_OK)
-
-    def post(self, request, format=None):
-        author = SpaceoutUser.objects.get(id=2)
-        content = SpaceoutContent.objects.get(id=20)
-
-        comment = SpaceoutComment(
-            author=author,
-            content=content,
-            audio_file=request.FILES['file'],
-        )
-        comment.save()
+    #
+    # def post(self, request, format=None):
+    #     author = SpaceoutUser.objects.get(id=2)
+    #     content = SpaceoutContent.objects.get(id=20)
+    #
+    #     comment = SpaceoutComment(
+    #         author=author,
+    #         content=content,
+    #         audio_file=request.FILES['file'],
+    #     )
+    #     comment.save()
 
 
 

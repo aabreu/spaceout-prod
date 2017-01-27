@@ -3,7 +3,7 @@ from django.conf import settings
 from spaceoutvr import views
 
 urlpatterns = [
-    url(r'^social/facebook/authorize/$', views.FacebookCallback.as_view(), name='fb_callback'),
+    url(r'^api/accounts/authenticate/facebook/$', views.AuthenticateFacebookView.as_view(), name='fb_authenticate'),
 
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
     url(r'^api/accounts/friends/$', views.FriendsView.as_view(), name='get_contacts'),

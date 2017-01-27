@@ -24,7 +24,7 @@ SECRET_KEY = "efhiuwehfiuwehfiuehuighiowejfioewjio"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = False
+DEBUG = True
 IS_LOCAL = False
 IS_DEV = True
 
@@ -208,6 +208,11 @@ OBJECT_STORAGE_PASSWORD = 'it-kDXeduV5x]0gP'
 OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-prod'
 OBJECT_STORAGE_WATSON_CONTAINER = 'watson-prod'
 OBJECT_STORAGE_MISC_CONTAINER = 'misc-prod'
+
+FACEBOOK_SECRET = '69f7153a7b58fda4b68e8372ca831947'
+
+if(IS_LOCAL):
+    FACEBOOK_SECRET = 'cbb7729872a16e1c1cd5d06d04edb7ad'
 
 if(IS_LOCAL or IS_DEV):
     OBJECT_STORAGE_COMMENTS_CONTAINER = 'comments-local'

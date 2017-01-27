@@ -52,6 +52,7 @@ class SpaceoutUser(EmailAbstractUser):
     longitude = models.CharField(max_length=30, default='', blank=True)
     notification_id = models.CharField(max_length=256, default='', blank=True)
     facebook_id = models.CharField(max_length=128, default='', blank=True)
+    facebook_token = models.CharField(max_length=256, default='', blank=True)
     reddit_id = models.CharField(max_length=128, default='', blank=True)
     twitter_id = models.CharField(max_length=128, default='', blank=True)
     soundcloud_id = models.CharField(max_length=128, default='', blank=True)
