@@ -637,8 +637,10 @@ class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
         print("SignIn")
         print(request.data["id"])
-        print(request.data["spacer_name"])
-        return self.signin_facebook(request.data["id"], request.data["spacer_name"])
+        try:
+            return self.signin_facebook(request.data["id"], request.data["spacer_name"])
+        except:
+            return self.signin_facebook(request.data["id"], None)
 
     def signin_facebook(self, access_token, spacer_name):
         # app secret proof
