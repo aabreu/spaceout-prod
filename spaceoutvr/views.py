@@ -695,7 +695,7 @@ class AuthenticateFacebookView(GenericAPIView):
 
         except:
             # not exist, choose spacer name
-
+            pass
         # self.login_or_signup("FACEBOOK", fb_id, access_token)
         return Response(status=status.HTTP_200_OK)
 
