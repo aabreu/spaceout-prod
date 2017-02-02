@@ -11,8 +11,10 @@ from django.views.generic.base import View
 from django.views.generic.edit import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
+from django.core.exceptions import MultipleObjectsReturned
 
 from authemail import wrapper
+from authemail.models import SignupCode
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -33,6 +35,7 @@ from spaceoutvr.models import SpaceoutUser, SpaceoutRoom, SpaceoutContent, Space
 from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, personality_insights_output_directory_path, featured_directory_path
 from spaceoutvr.notifications import OneSignalNotifications
 from spaceoutvr.storage import WatsonStorage, MiscStorage
+from spaceoutvr.facebook import FacebookBackend
 
 from datetime import datetime
 
@@ -126,24 +129,6 @@ class LoginView(FormView):
 
     def get_success_url(self):
         return reverse('home_page')
-
-
-class HomeView(TemplateView):
-    template_name = 'home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-
-        token = self.request.session['auth_token']
-
-        account = wrapper.Authemail()
-        account.base_uri = "%s/api" % settings.SERVER_URL
-        response = account.users_me(token=token)
-
-        context['email'] = response['email']
-
-        return context
-
 
 class LogoutView(View):
     def get(self, request):
@@ -633,9 +618,97 @@ class SearchView(APIView):
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
 
+class AuthenticateEmailView(GenericAPIView):
+    def post(self, request, format=None):
+        print("SignIn - Email")
+        password_provided = "password" in request.data
+        spacer_name_provided = "user_name" in request.data
+
+        print("password provided? %s" % password_provided)
+        print("space name provided? %s" % spacer_name_provided)
+
+        try:
+            user = SpaceoutUser.objects.get(email=request.data["id"])
+            # user exist, trying to login
+            has_spacer_name = user.user_name != None and user.user_name != ''
+            has_password = user.password != None
+
+            print("has spacer name? %s" % has_spacer_name)
+            print("has password? %s" % has_password)
+
+            if has_password:
+                # password was provided, login!
+                print("Login %s %s" % (request.data["id"], request.data["password"]))
+                if password_provided:
+                    if user.is_verified:
+                        if has_spacer_name:
+                            # delete old signup code
+                            try:
+                                signup_code = SignupCode.objects.get(user=user)
+                                signup_code.delete()
+                            except SignupCode.DoesNotExist:
+                                pass
+
+                            # Login
+                            account = wrapper.Authemail()
+                            account.base_uri = "%s/api" % settings.SERVER_URL
+                            response = account.login(email=request.data["id"], password=request.data["password"])
+                            if 'token' in response:
+                                response['code'] = 0
+                                response['debug'] = 'Logged in'
+                                return Response(response, status=status.HTTP_200_OK)
+                            else:
+                                # not authorized
+                                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                        else:
+                            if spacer_name_provided:
+                                # Login
+                                account = wrapper.Authemail()
+                                account.base_uri = "%s/api" % settings.SERVER_URL
+                                response = account.login(email=request.data["id"], password=request.data["password"])
+                                if 'token' in response:
+                                    # save spacer name
+                                    user.user_name = request.data["user_name"]
+                                    user.save()
+                                    response['code'] = 0
+                                    response['debug'] = 'Logged in'
+                                    return Response(response, status=status.HTTP_200_OK)
+                                else:
+                                    # not authorized
+                                    return Response(status=status.HTTP_401_UNAUTHORIZED)
+                            else:
+                                # user has spacer name
+                                return Response({'code':5, 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+                    else:
+                        # user not verified
+                        return Response({'code':4, 'debug':"Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue."}, status=status.HTTP_200_OK)
+                else:
+                    # no password provided
+                    return Response({'code':2, 'debug':"Email Sign In, enter your password"}, status=status.HTTP_200_OK)
+            else:
+                # user has no password, ask for a password
+                return Response({'code':3, 'debug':"An account already exists for this email address.\n Please sign in using a method used before.\n (Once signied in, you can add a password in Account Settings menu.)"}, status=status.HTTP_200_OK)
+
+        except SpaceoutUser.DoesNotExist:
+            # user do not exist, trying to sign up
+            if password_provided:
+                new_user = SpaceoutUser.objects.create_user(email=request.data["id"])
+                new_user.set_password(request.data["password"])
+                new_user.save()
+
+                # send validation email
+                ipaddr = self.request.META.get('REMOTE_ADDR', '0.0.0.0')
+                signup_code = SignupCode.objects.create_signup_code(new_user, ipaddr)
+                signup_code.send_signup_email()
+
+                return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
+
+            return Response({'code':1, 'debug':'No account exists for this email address.\n Enter a new password to create a new account!'}, status=status.HTTP_200_OK)
+
+
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
-        print("SignIn")
+        print("SignIn - Facebook")
         print(request.data["id"])
         try:
             return self.signin_facebook(request.data["id"], request.data["spacer_name"])
@@ -643,88 +716,41 @@ class AuthenticateFacebookView(GenericAPIView):
             return self.signin_facebook(request.data["id"], None)
 
     def signin_facebook(self, access_token, spacer_name):
-        # app secret proof
-        h = hmac.new (
-            settings.FACEBOOK_SECRET.encode('utf-8'),
-            msg = access_token.encode('utf-8'),
-            digestmod = hashlib.sha256
-        )
-        appsecret_proof = h.hexdigest()
-
-        # make sure token is valid
-        api_call = "https://graph.facebook.com/me/?access_token=%s&appsecret_proof=%s&fields=id,name,email" % (access_token, appsecret_proof)
-        r = requests.get(api_call)
-        data = r.json()
-        print(data)
-        fb_id = data['id']
-        fb_email = data['email']
-
-        # SpaceoutVR account exists with that social media account?
-        try:
-            existing_user = SpaceoutUserModel.objects.get(facebook_id=fb_id)
-            # yes
-        except:
-            # no
-            # SpaceoutVR account exists with that email?
+        facebook = FacebookBackend()
+        user = facebook.authenticate(access_token)
+        if user == None:
+            # check if there is an old account with the facebook email
+            data = facebook.get_token_data(access_token)
             try:
-                existing_user = SpaceoutUserModel.objects.get(email=email)
-                # yes, merge social account to SpaceoutVR account and login
-                print("merge %s with %s" % (email, fb_id))
-                existing_user.facebook_id = fb_id
+                fb_id = data['id']
+                fb_email = data['email']
+                try:
+                    existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
+                    print("merge spaceoutvr account %s with facebook id %s" % (existing_user.email, fb_id))
+                    return Response(status=status.HTTP_401_UNAUTHORIZED)
+                except MultipleObjectsReturned:
+                    # yes, but there are more than one user with that facebook_id, signup stright
+                    print("multiple facebook accounts detected, sign up with email %s and facebook id %s" % (fb_email, fb_id))
+                    if spacer_name == None:
+                        print("ask for spacer name")
+                        return Response({'code':'create_spacer_name'}, status=status.HTTP_200_OK)
+                    else:
+                        print("signup")
+                        facebook.signup(fb_email, spacer_name, fb_id)
+                        return Response(status=status.HTTP_200_OK)
+
+                except SpaceoutUser.DoesNotExist:
+                    print("signup!, ask for spacer name")
+                    return Response({'code':'create_spacer_name'}, status=status.HTTP_200_OK)
+
             except:
-                # no
-                # is spacer name present?
-                if spacer_name != None:
-                    # yes, signup
-                    print("signup with spacer name %s" % (spacer_name))
-                else:
-                    # no, ask for a spacer name
-                    print("need a spacer name %s" % (spacer_name))
-                    content = {'code':'create_spacer_name'}
-                    return Response(content, status=status.HTTP_200_OK)
+                print("access token not valid %s" % access_token)
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        else:
+            # logged in!
+            return Response(status=status.HTTP_200_OK)
 
-        try:
-            email = data['email']
-            print("login in %s", email)
-        except:
-            # access token is not valid
-            print("access token not valid %s", access_token)
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
-            existing_user = SpaceoutUserModel.objects.get(email=email)
-
-        except:
-            # not exist, choose spacer name
-            pass
-        # self.login_or_signup("FACEBOOK", fb_id, access_token)
-        return Response(status=status.HTTP_200_OK)
-
-    # def login_or_signup(self, method, email, access_token):
-    #     # check unique user name
-    #     UserModel = get_user_model()
-    #
-    #     if method == "FACEBOOK":
-    #         try:
-    #             existing_user = UserModel.objects.get(facebook_id=user_id)
-    #             # login
-    #         except get_user_model().DoesNotExist:
-    #             # signup
-    #             user = get_user_model().objects.create_user(facebook_id=user_id)
-    #
-    #         user.first_name = first_name
-    #         user.last_name = last_name
-    #
-    #         user.user_name = user_name
-    #
-    #         if not must_validate_email:
-    #             user.is_verified = True
-    #             send_multi_format_email('welcome_email',
-    #                                     {'email': user.email,},
-    #                                     target_email=user.email)
-    #         user.save()
-    #
 
 class DebugView(GenericAPIView):
     serializer_class = SpaceoutUserSerializer

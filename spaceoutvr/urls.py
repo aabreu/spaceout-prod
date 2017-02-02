@@ -4,6 +4,7 @@ from spaceoutvr import views
 
 urlpatterns = [
     url(r'^api/accounts/authenticate/facebook/$', views.AuthenticateFacebookView.as_view(), name='fb_authenticate'),
+    url(r'^api/accounts/authenticate/email/$', views.AuthenticateEmailView.as_view(), name='fb_authenticate'),
 
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
     url(r'^api/accounts/friends/$', views.FriendsView.as_view(), name='get_contacts'),
