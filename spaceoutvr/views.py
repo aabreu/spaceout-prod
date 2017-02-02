@@ -709,47 +709,50 @@ class AuthenticateEmailView(GenericAPIView):
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
         print("SignIn - Facebook")
-        print(request.data["id"])
-        try:
-            return self.signin_facebook(request.data["id"], request.data["spacer_name"])
-        except:
-            return self.signin_facebook(request.data["id"], None)
 
-    def signin_facebook(self, access_token, spacer_name):
+        access_token = request.data["id"]
+        spacer_name_provided = "user_name" in request.data
+
         facebook = FacebookBackend()
-        user = facebook.authenticate(access_token)
-        if user == None:
-            # check if there is an old account with the facebook email
-            data = facebook.get_token_data(access_token)
+        response = facebook.login(access_token)
+        if 'token' in response:
+            # logged in!
+            return Response(response, status=status.HTTP_200_OK)
+
+        # check if there is an old account with the facebook email
+        data = facebook.get_token_data(access_token)
+        try:
+            fb_id = data['id']
+            fb_email = data['email']
             try:
-                fb_id = data['id']
-                fb_email = data['email']
-                try:
-                    existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
-                    print("merge spaceoutvr account %s with facebook id %s" % (existing_user.email, fb_id))
-                    return Response(status=status.HTTP_401_UNAUTHORIZED)
-                except MultipleObjectsReturned:
-                    # yes, but there are more than one user with that facebook_id, signup stright
-                    print("multiple facebook accounts detected, sign up with email %s and facebook id %s" % (fb_email, fb_id))
-                    if spacer_name == None:
-                        print("ask for spacer name")
-                        return Response({'code':'create_spacer_name'}, status=status.HTTP_200_OK)
-                    else:
-                        print("signup")
-                        facebook.signup(fb_email, spacer_name, fb_id)
-                        return Response(status=status.HTTP_200_OK)
+                existing_user = SpaceoutUser.objects.get(email=fb_email)
+                existing_user.facebook_token = access_token
+                existing_user.facebook_id = fb_id
+                existing_user.save()
 
-                except SpaceoutUser.DoesNotExist:
-                    print("signup!, ask for spacer name")
-                    return Response({'code':'create_spacer_name'}, status=status.HTTP_200_OK)
+            except SpaceoutUser.DoesNotExist:
+                if spacer_name_provided:
+                    # signup
+                    facebook.signup(
+                        fb_email,
+                        request.data["user_name"],
+                        fb_id,
+                        access_token
+                    )
+                else:
+                    return Response({'code':5, 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
-            except:
-                print("access token not valid %s" % access_token)
+            # try to login
+            token = facebook.login(access_token)
+            if token != None:
+                # logged in!
+                return Response({'code':0, 'token': token, 'debug': 'Logged in'}, status=status.HTTP_200_OK)
+            else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        else:
-            # logged in!
-            return Response(status=status.HTTP_200_OK)
+        except:
+            print("access token not valid %s" % access_token)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class DebugView(GenericAPIView):

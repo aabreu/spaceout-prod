@@ -2,6 +2,10 @@ from spaceoutvr.models import SpaceoutUser
 
 from django.conf import settings
 
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework import status
+
 import hashlib
 import hmac
 import json
@@ -14,22 +18,37 @@ class FacebookBackend(object):
         fb_email = data['email']
         try:
             existing_user = SpaceoutUser.objects.get(email=fb_email)
+            existing_user.facebook_token = access_token
+            existing_user.save()
             return existing_user
         except SpaceoutUser.DoesNotExist:
             return None
+
+
+
+    def login(self, access_token):
+        user = self.authenticate(access_token)
+        if user != None:
+            token, created = Token.objects.get_or_create(user=user)
+            return token.key
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def signup(self, email, spacer_name, facebook_id, access_token):
+        new_user = SpaceoutUser.objects.create_user(
+            email=email,
+            user_name=spacer_name,
+            facebook_id=facebook_id,
+            facebook_token=access_token
+        )
+        new_user.save()
+        return new_user
 
     def get_user(self, email):
         try:
             return SpaceoutUser.objects.get(email=email)
         except SpaceoutUser.DoesNotExist:
             return None
-
-    def signup(self, email, spacer_name, facebook_id):
-        new_user = SpaceoutUser.objects.create_user(email=email, user_name=spacer_name)
-        new_user.is_verified = True
-        new_user.facebook_id = facebook_id
-        new_user.save()
-        return new_user
 
     def get_token_data(self, access_token):
         # app secret proof
