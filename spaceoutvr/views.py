@@ -56,6 +56,11 @@ def send_signup_email(user, request):
     signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
     signup_code.send_signup_email()
 
+def is_null_or_empty(s):
+    if s == None or s == '':
+        return True
+    return False
+
 class SignupVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
@@ -318,6 +323,13 @@ class ContentView(APIView):
 class AddPasswordView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
+
+        if not 'password' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["password"]):
+            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
         user.set_password(request.data["password"])
         user.is_verified = False
@@ -331,6 +343,9 @@ class ChangePasswordView(APIView):
         if not "password" in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if is_null_or_empty(request.data["password"]):
+            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
 
         user.set_password(request.data["password"])
@@ -340,7 +355,14 @@ class ChangePasswordView(APIView):
 class CheckPasswordView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
+        if not 'password' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["password"]):
+            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         logged_in_user = request.user
+
         user = authenticate(email=logged_in_user.email, password=request.data['password'])
         if user == None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -350,6 +372,12 @@ class CheckPasswordView(APIView):
 class ChangeSpacerNameView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
+        if not 'user_name' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["user_name"]):
+            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
         if "user_name" in request.data:
             try:
@@ -365,6 +393,13 @@ class ChangeSpacerNameView(APIView):
 class ChangeEmailView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
+
+        if not 'id' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["id"]):
+            return Response({'details':'empty password id allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
 
         if not user.hasPassword():
@@ -672,6 +707,12 @@ class SearchView(APIView):
 
 class AuthenticateEmailResendView(GenericAPIView):
     def post(self, request, format=None):
+        if not 'id' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["id"]):
+            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             user = SpaceoutUser.objects.get(email=request.data["id"])
             send_signup_email(user, request)
@@ -709,6 +750,11 @@ class AuthenticateEmailView(GenericAPIView):
                     print("Login %s %s" % (request.data["id"], request.data["password"]))
                     if user.is_verified:
                         if has_spacer_name:
+                            if is_null_or_empty(request.data["id"]):
+                                return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                            if is_null_or_empty(request.data["password"]):
+                                return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
                             # delete old signup code
                             try:
                                 signup_code = SignupCode.objects.get(user=user)
@@ -729,6 +775,12 @@ class AuthenticateEmailView(GenericAPIView):
                                 return Response(status=status.HTTP_401_UNAUTHORIZED)
                         else:
                             if spacer_name_provided:
+
+                                if is_null_or_empty(request.data["id"]):
+                                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                if is_null_or_empty(request.data["password"]):
+                                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
                                 # Login
                                 account = wrapper.Authemail()
                                 account.base_uri = "%s/api" % settings.SERVER_URL
@@ -739,8 +791,13 @@ class AuthenticateEmailView(GenericAPIView):
                                         spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
                                         return Response({'code':6, 'debug':"Username already exist"}, status=status.HTTP_200_OK)
                                     except SpaceoutUser.DoesNotExist:
+
+                                        if is_null_or_empty(request.data["user_name"]):
+                                            return Response({'details':'empty user name not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
                                         user.user_name = request.data["user_name"]
                                         user.save()
+
                                         response['code'] = 0
                                         response['debug'] = 'Logged in'
                                         return Response(response, status=status.HTTP_200_OK)
@@ -763,6 +820,11 @@ class AuthenticateEmailView(GenericAPIView):
         except SpaceoutUser.DoesNotExist:
             # user do not exist, trying to sign up
             if password_provided:
+                if is_null_or_empty(request.data["id"]):
+                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                if is_null_or_empty(request.data["password"]):
+                    return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
                 new_user = SpaceoutUser.objects.create_user(email=request.data["id"])
                 new_user.set_password(request.data["password"])
                 new_user.save()
@@ -776,6 +838,12 @@ class AuthenticateEmailView(GenericAPIView):
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
         print("SignIn - Facebook")
+
+        if not 'id' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["id"]):
+            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
 
         access_token = request.data["id"]
         spacer_name_provided = "user_name" in request.data
