@@ -601,6 +601,7 @@ class SearchView(APIView):
     def get(self, request, format=None):
         if 's' in request.query_params:
             if request.query_params['s'] == 's':
+                # street view
                 lat = request.query_params['lat']
                 lon = request.query_params['lon']
                 fov = request.query_params['fov']
@@ -610,14 +611,26 @@ class SearchView(APIView):
                 r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
                 return HttpResponse(r, content_type="image/jpeg")
             elif request.query_params['s'] == 'y':
+                # youtube
                 query = request.query_params['q']
                 url = settings.YOUTUBE_SEARCH_URL % (query, settings.GOOGLE_API_KEY)
+                if "pageToken" in request.query_params:
+                    page_token = request.query_params['pageToken']
+                    url = url + "&pageToken=%s" % page_token
                 print(url)
                 r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
                 return Response(r.json())
         else:
+            # google images
             query = request.query_params['q']
             url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_API_KEY)
+
+            if "start" in request.query_params:
+                start_page = request.query_params['start']
+                url = url + "&start=%s" % start_page
+
+            print(url)
+
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
 
