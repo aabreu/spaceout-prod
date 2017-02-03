@@ -328,7 +328,11 @@ class AddPasswordView(APIView):
 class ChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
+        if not "password" in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         user = request.user
+
         user.set_password(request.data["password"])
         user.save()
         return Response(status=status.HTTP_200_OK)
@@ -342,6 +346,21 @@ class CheckPasswordView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_200_OK)
+
+class ChangeSpacerNameView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+        if "user_name" in request.data:
+            try:
+                spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
+                return Response({'code':6, 'debug':"Username already exist"}, status=status.HTTP_200_OK)
+            except SpaceoutUser.DoesNotExist:
+                user.user_name = request.data['user_name']
+                user.save()
+                return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -699,11 +718,15 @@ class AuthenticateEmailView(GenericAPIView):
                                 response = account.login(email=request.data["id"], password=request.data["password"])
                                 if 'token' in response:
                                     # save spacer name
-                                    user.user_name = request.data["user_name"]
-                                    user.save()
-                                    response['code'] = 0
-                                    response['debug'] = 'Logged in'
-                                    return Response(response, status=status.HTTP_200_OK)
+                                    try:
+                                        spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
+                                        return Response({'code':6, 'debug':"Username already exist"}, status=status.HTTP_200_OK)
+                                    except SpaceoutUser.DoesNotExist:
+                                        user.user_name = request.data["user_name"]
+                                        user.save()
+                                        response['code'] = 0
+                                        response['debug'] = 'Logged in'
+                                        return Response(response, status=status.HTTP_200_OK)
                                 else:
                                     # not authorized
                                     return Response(status=status.HTTP_401_UNAUTHORIZED)
