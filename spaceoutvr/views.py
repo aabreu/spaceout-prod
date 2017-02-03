@@ -362,6 +362,23 @@ class ChangeSpacerNameView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class ChangeEmailView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+
+        if not user.hasPassword():
+            return Response({'details':'Operation ont allwed, user has no password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if "id" in request.data:
+            user.email = request.data["id"]
+            user.is_verified = False
+            user.save()
+            send_signup_email(user, request)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = SpaceoutUserSerializer
@@ -775,6 +792,7 @@ class AuthenticateFacebookView(GenericAPIView):
             fb_id = data['id']
             fb_email = data['email']
             try:
+                # merge with existing account
                 existing_user = SpaceoutUser.objects.get(email=fb_email)
                 existing_user.facebook_token = access_token
                 existing_user.facebook_id = fb_id

@@ -24,8 +24,6 @@ class FacebookBackend(object):
         except SpaceoutUser.DoesNotExist:
             return None
 
-
-
     def login(self, access_token):
         user = self.authenticate(access_token)
         if user != None:
