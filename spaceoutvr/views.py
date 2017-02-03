@@ -315,6 +315,34 @@ class ContentView(APIView):
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+class AddPasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+        user.set_password(request.data["password"])
+        user.is_verified = False
+        user.save()
+        send_signup_email(user, request)
+        return Response(status=status.HTTP_200_OK)
+
+class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+        user.set_password(request.data["password"])
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+
+class CheckPasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        logged_in_user = request.user
+        user = authenticate(email=logged_in_user.email, password=request.data['password'])
+        if user == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response(status=status.HTTP_200_OK)
+
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = SpaceoutUserSerializer

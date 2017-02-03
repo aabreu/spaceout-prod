@@ -8,6 +8,9 @@ urlpatterns = [
     url(r'^api/accounts/authenticate/email/resend/$', views.AuthenticateEmailResendView.as_view(), name='email_authenticate_resend'),
 
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
+    url(r'^api/accounts/password/add/$', views.AddPasswordView.as_view(), name='add_password'),
+    url(r'^api/accounts/password/change/$', views.ChangePasswordView.as_view(), name='change_password'),
+    url(r'^api/accounts/password/check/$', views.CheckPasswordView.as_view(), name='check_password'),
     url(r'^api/accounts/friends/$', views.FriendsView.as_view(), name='get_contacts'),
     url(r'^api/accounts/people/online/$', views.OnLineView.as_view(), name='people_online'),
     url(r'^api/accounts/people/popular/$', views.PopularView.as_view(), name='people_popular'),
