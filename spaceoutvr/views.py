@@ -623,7 +623,7 @@ class SearchView(APIView):
         else:
             # google images
             query = request.query_params['q']
-            url = "%s/?q=%s%s%s%s" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_API_KEY)
+            url = "%s/?q=%s%s%s%s&safe=medium" % (settings.GOOGLE_SEARCH_BASE_URL, query, settings.GOOGLE_SEARCH_ENGINE_ID, settings.GOOGLE_SEARCH_URL, settings.GOOGLE_API_KEY)
 
             if "start" in request.query_params:
                 start_page = request.query_params['start']
