@@ -50,36 +50,11 @@ class LandingView(TemplateView):
 def users_with_room():
     return SpaceoutUser.objects.annotate(count=Count('spaceoutroom__spaceoutcontent')).filter(count__gt = 0)
 
-
-class SignupView(FormView):
-    template_name = 'signup.html'
-    form_class = SignupForm
-
-    def form_valid(self, form):
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
-
-        account = wrapper.Authemail()
-        account.base_uri = "%s/api" % settings.SERVER_URL
-        response = account.signup(first_name=first_name, last_name=last_name,
-                                  email=email, password=password)
-
-        # Handle other error responses from API
-        if 'detail' in response:
-            form.add_error(None, response['detail'])
-            return self.form_invalid(form)
-
-        return super(SignupView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse('signup_email_sent_page')
-
-
-class SignupEmailSentView(TemplateView):
-    template_name = 'signup_email_sent.html'
-
+def send_signup_email(user, request):
+    # send validation email
+    ipaddr = request.META.get('REMOTE_ADDR', '0.0.0.0')
+    signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
+    signup_code.send_signup_email()
 
 class SignupVerifyView(View):
     def get(self, request, format=None):
@@ -618,6 +593,17 @@ class SearchView(APIView):
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
 
+class AuthenticateEmailResendView(GenericAPIView):
+    def post(self, request, format=None):
+        try:
+            user = SpaceoutUser.objects.get(email=request.data["id"])
+            send_signup_email(user, request)
+            return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
+        except SpaceoutUser.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
 class AuthenticateEmailView(GenericAPIView):
     def post(self, request, format=None):
         print("SignIn - Email")
@@ -636,10 +622,13 @@ class AuthenticateEmailView(GenericAPIView):
             print("has spacer name? %s" % has_spacer_name)
             print("has password? %s" % has_password)
 
+            if not user.is_verified:
+                return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
+
             if has_password:
-                # password was provided, login!
-                print("Login %s %s" % (request.data["id"], request.data["password"]))
                 if password_provided:
+                    # password was provided, login!
+                    print("Login %s %s" % (request.data["id"], request.data["password"]))
                     if user.is_verified:
                         if has_spacer_name:
                             # delete old signup code
@@ -696,15 +685,11 @@ class AuthenticateEmailView(GenericAPIView):
                 new_user.set_password(request.data["password"])
                 new_user.save()
 
-                # send validation email
-                ipaddr = self.request.META.get('REMOTE_ADDR', '0.0.0.0')
-                signup_code = SignupCode.objects.create_signup_code(new_user, ipaddr)
-                signup_code.send_signup_email()
+                send_signup_email(new_user, request)
 
                 return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
 
             return Response({'code':1, 'debug':'No account exists for this email address.\n Enter a new password to create a new account!'}, status=status.HTTP_200_OK)
-
 
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
