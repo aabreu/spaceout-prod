@@ -97,11 +97,15 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     def get_featured_input_url(self, user):
         return user.featured_input_url.storage.url(user.featured_input_url.name)
 
+    def get_has_password(self, user):
+        return user.hasPassword()
+
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     user_name = serializers.CharField()
     email = serializers.CharField()
+    has_password = serializers.SerializerMethodField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
     reddit_id = serializers.CharField()
@@ -119,7 +123,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'user_name', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email',
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email', 'has_password',
                   'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url', 'avatar_url',
                   'personality_insights_output_url', 'last_activity',
                   'spaceoutroom_set')

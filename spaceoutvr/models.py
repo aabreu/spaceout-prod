@@ -75,6 +75,9 @@ class SpaceoutUser(EmailAbstractUser):
     def hasRoom(self):
         return self.spaceoutroom_set.count > 0
 
+    def hasPassword(self):
+        return self.password != None and self.password != ''
+
 class SpaceoutRoomDefinition(models.Model):
     ROOM_TYPE_HOME = 0
     ROOM_TYPE_360 = 1

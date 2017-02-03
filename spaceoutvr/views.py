@@ -617,16 +617,17 @@ class AuthenticateEmailView(GenericAPIView):
             user = SpaceoutUser.objects.get(email=request.data["id"])
             # user exist, trying to login
             has_spacer_name = user.user_name != None and user.user_name != ''
-            has_password = user.password != None
+            has_password = user.hasPassword()
 
             print("has spacer name? %s" % has_spacer_name)
             print("has password? %s" % has_password)
 
-            if not user.is_verified:
-                return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
-
             if has_password:
                 if password_provided:
+
+                    if not user.is_verified:
+                        return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
+
                     # password was provided, login!
                     print("Login %s %s" % (request.data["id"], request.data["password"]))
                     if user.is_verified:
@@ -745,73 +746,13 @@ class DebugView(GenericAPIView):
 
     def get(self, request, format=None):
 
-        with_fb = SpaceoutUser.objects.all().filter(facebook_id__isnull=False).count()
-        total = SpaceoutUser.objects.all().count()
+        # with_fb = SpaceoutUser.objects.all().filter(facebook_id__isnull=False).count()
+        # total = SpaceoutUser.objects.all().count()
+        # report = "{'with_fb':%s, 'total':%s, 'rate':%s}" % (with_fb, total, total / with_fb)
+        # return Response(report)
 
-        report = "{'with_fb':%s, 'total':%s, 'rate':%s}" % (with_fb, total, total / with_fb)
-
-        return Response(report)
-        # users = users_with_room()
-        # total_users = SpaceoutUser.objects.all().count()
-        # with_room = users.count()
-        # result = {'with_room':with_room, 'total':total_users}
-        # return Response(result)
-        # watson_storage = WatsonStorage()
-        # misc_storage = MiscStorage()
-        #
-        # users = SpaceoutUser.objects.all()
-        # for user in users:
-        #     file_name = personality_insights_output_directory_path(user, "")
-        #     print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
-        #     if watson_storage.exists(file_name):
-        #         url = watson_storage.url(file_name)
-        #         print("downloading %s" % url)
-        #         f = requests.get(url)
-        #         print("downloaded %s bytes" % len(f.content))
-        #         misc_storage._save(file_name, f.content)
-        #         watson_storage.delete(file_name)
-        #
-        #     file_name = featured_directory_path(user, "")
-        #     print("processing %s (%s) | %s" % (user.id, user.first_name, file_name))
-        #     if watson_storage.exists(file_name):
-        #         url = watson_storage.url(file_name)
-        #         print("downloading %s" % url)
-        #         f = requests.get(url)
-        #         print("downloaded %s bytes" % len(f.content))
-        #         misc_storage._save(file_name, f.content)
-        #
-        #     # print(watson_storage.url(personality_insights_input_directory_path(user, "")))
-        #
-        # return Response(status=status.HTTP_200_OK)
-
-        # first_name = "Test"
-        # last_name = "Doe"
-        # email = "agustinabreu+test@gmail.com"
-        # password = "fidelio"
-        #
-        # account = wrapper.Authemail()
-        # account.base_uri = "%s/api" % settings.SERVER_URL
-        # response = account.signup(first_name=first_name, last_name=last_name,
-        #     email=email, password=password)
-        #
-        # return response
-
-        # return Response(WatsonBlacklistSerializer(WatsonBlacklist.objects.all(), many=True).data)
-
-        # return Response(SpaceoutUserSerializer(user).data)
-        # return Response(SpaceoutUserNotificationsSerializer(user).data)
-        # serializer_class = SpaceoutNotificationSerializer
-        # n = OneSignalNotifications()
-        # n.send(user.notification_id)
-
-        # queryset = user.notifications.all()
-        # return super(ListAPIView, self)
-
-        # user = SpaceoutUser.objects.get(id=27)
-        # return Response(SpaceoutUserNotificationsSerializer(user).data)
-        # return Response(SpaceoutNotificationSerializer(user.notifications, many=True).data)
-        # user = SpaceoutUser.objects.all()
-        # return Response(SpaceoutUserSerializer(user, many=True).data)
+        user = SpaceoutUser.objects.all()
+        return Response(SpaceoutUserSerializer(user, many=True).data)
 
         # room = SpaceoutRoom.objects.get(user_id=2)
         # return Response(SpaceoutRoomSerializer(room).data)
