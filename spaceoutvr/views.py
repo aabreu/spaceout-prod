@@ -61,6 +61,19 @@ def is_null_or_empty(s):
         return True
     return False
 
+def generate_random_name(user):
+    original = user.email.split("@")[0]
+    username = original
+    intents = 0
+    while intents < 100:
+        try:
+            existing = SpaceoutUser.objects.get(user_name=username)
+            # exists!
+            intents = intents + 1
+            username = "%s%s" % (original, intents)
+        except SpaceoutUser.DoesNotExist:
+            return username
+
 class SignupVerifyView(View):
     def get(self, request, format=None):
         code = request.GET.get('code', '')
@@ -347,6 +360,9 @@ class ChangePasswordView(APIView):
             return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
+
+        # if not user.is_verified:
+        #     return Response({'details':'you must email not verified'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(request.data["password"])
         user.save()
@@ -806,7 +822,7 @@ class AuthenticateEmailView(GenericAPIView):
                                     return Response(status=status.HTTP_401_UNAUTHORIZED)
                             else:
                                 # user has spacer name
-                                return Response({'code':5, 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+                                return Response({'code':5, 'spacer_suggestion':generate_random_name(user), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
                     else:
                         # user not verified
                         return Response({'code':4, 'debug':"Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue."}, status=status.HTTP_200_OK)
@@ -876,7 +892,7 @@ class AuthenticateFacebookView(GenericAPIView):
                         access_token
                     )
                 else:
-                    return Response({'code':5, 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+                    return Response({'code':5, 'spacer_suggestion':generate_random_name(user), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
             # try to login
             token = facebook.login(access_token)
