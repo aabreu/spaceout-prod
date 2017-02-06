@@ -851,6 +851,35 @@ class AuthenticateEmailView(GenericAPIView):
 
             return Response({'code':1, 'debug':'No account exists for this email address.\n Enter a new password to create a new account!'}, status=status.HTTP_200_OK)
 
+class AuthenticateTwitterView(GenericAPIView):
+    def post(self, request, format=None):
+        print("SignIn - Twitter")
+
+        if not 'id' in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if is_null_or_empty(request.data["id"]):
+            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+
+        access_token = request.data["id"]
+        access_token_secret = request.data["secret"]
+
+        spacer_name_provided = "user_name" in request.data
+
+        url = "https://api.twitter.com/1.1/account/verify_credentials.json"
+        r = requests.get(url, headers={
+            "oauth_token":access_token,
+            # "oauth_token_secret": access_token_secret,
+            "oauth_consumer_key": "",
+            "oauth_consumer_key_secret":""
+        })
+        data = r.json()
+
+        print(data)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
         print("SignIn - Facebook")

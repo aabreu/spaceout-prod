@@ -1,6 +1,7 @@
 from spaceoutvr.models import SpaceoutUser
 
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned
 
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -16,8 +17,14 @@ class FacebookBackend(object):
     def authenticate(self, access_token=None):
         data = self.get_token_data(access_token)
         fb_email = data['email']
+        fb_id = data['id']
         try:
-            existing_user = SpaceoutUser.objects.get(email=fb_email)
+            existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
+            existing_user.facebook_token = access_token
+            existing_user.save()
+            return existing_user
+        except MultipleObjectsReturned:
+            existing_user = SpaceoutUser.objects.filter(facebook_id=fb_id)[0]
             existing_user.facebook_token = access_token
             existing_user.save()
             return existing_user
