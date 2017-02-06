@@ -36,6 +36,7 @@ from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, person
 from spaceoutvr.notifications import OneSignalNotifications
 from spaceoutvr.storage import WatsonStorage, MiscStorage
 from spaceoutvr.facebook import FacebookBackend
+from spaceoutvr.twitter import TwitterBackend
 
 from datetime import datetime
 
@@ -341,7 +342,7 @@ class AddPasswordView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["password"]):
-            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
         user.set_password(request.data["password"])
@@ -357,7 +358,7 @@ class ChangePasswordView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["password"]):
-            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
 
@@ -375,7 +376,7 @@ class CheckPasswordView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["password"]):
-            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         logged_in_user = request.user
 
@@ -392,7 +393,7 @@ class ChangeSpacerNameView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["user_name"]):
-            return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
         if "user_name" in request.data:
@@ -414,12 +415,12 @@ class ChangeEmailView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["id"]):
-            return Response({'details':'empty password id allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
 
         if not user.hasPassword():
-            return Response({'details':'Operation ont allwed, user has no password'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'change_email_not_allowed'}, status=status.HTTP_400_BAD_REQUEST)
 
         if "id" in request.data:
             user.email = request.data["id"]
@@ -727,7 +728,7 @@ class AuthenticateEmailResendView(GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["id"]):
-            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = SpaceoutUser.objects.get(email=request.data["id"])
@@ -767,9 +768,9 @@ class AuthenticateEmailView(GenericAPIView):
                     if user.is_verified:
                         if has_spacer_name:
                             if is_null_or_empty(request.data["id"]):
-                                return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
                             if is_null_or_empty(request.data["password"]):
-                                return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
                             # delete old signup code
                             try:
@@ -793,9 +794,9 @@ class AuthenticateEmailView(GenericAPIView):
                             if spacer_name_provided:
 
                                 if is_null_or_empty(request.data["id"]):
-                                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                    return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
                                 if is_null_or_empty(request.data["password"]):
-                                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                    return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
                                 # Login
                                 account = wrapper.Authemail()
@@ -805,11 +806,11 @@ class AuthenticateEmailView(GenericAPIView):
                                     # save spacer name
                                     try:
                                         spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
-                                        return Response({'code':6, 'debug':"Username already exist"}, status=status.HTTP_200_OK)
+                                        return Response({'code':6, 'debug':"signin_spacername_already_exist"}, status=status.HTTP_200_OK)
                                     except SpaceoutUser.DoesNotExist:
 
                                         if is_null_or_empty(request.data["user_name"]):
-                                            return Response({'details':'empty user name not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                                            return Response({'details':'signin_spacername_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
                                         user.user_name = request.data["user_name"]
                                         user.save()
@@ -837,9 +838,9 @@ class AuthenticateEmailView(GenericAPIView):
             # user do not exist, trying to sign up
             if password_provided:
                 if is_null_or_empty(request.data["id"]):
-                    return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
                 if is_null_or_empty(request.data["password"]):
-                    return Response({'details':'empty password not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
                 new_user = SpaceoutUser.objects.create_user(email=request.data["id"])
                 new_user.set_password(request.data["password"])
@@ -859,23 +860,15 @@ class AuthenticateTwitterView(GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["id"]):
-            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
-
-        access_token = request.data["id"]
-        access_token_secret = request.data["secret"]
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         spacer_name_provided = "user_name" in request.data
 
-        url = "https://api.twitter.com/1.1/account/verify_credentials.json"
-        r = requests.get(url, headers={
-            "oauth_token":access_token,
-            # "oauth_token_secret": access_token_secret,
-            "oauth_consumer_key": "",
-            "oauth_consumer_key_secret":""
-        })
-        data = r.json()
+        access_token = request.data["id"]
+        access_token_verif = request.data["access_token_verif"]
 
-        print(data)
+        twitter = TwitterBackend()
+        twitter.authenticate(access_token, access_token_verif)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -888,7 +881,7 @@ class AuthenticateFacebookView(GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if is_null_or_empty(request.data["id"]):
-            return Response({'details':'empty id not allowed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'details':'signin_password_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         access_token = request.data["id"]
         spacer_name_provided = "user_name" in request.data
