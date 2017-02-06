@@ -16,9 +16,4 @@ class Migration(migrations.Migration):
             name='twitter_token',
             field=models.CharField(default=b'', max_length=256, blank=True),
         ),
-        migrations.AlterField(
-            model_name='spaceoutuser',
-            name='user_name',
-            field=models.CharField(default=b'', unique=True, max_length=30),
-        ),
     ]
