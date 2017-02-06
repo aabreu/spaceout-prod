@@ -36,9 +36,6 @@ from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, person
 from spaceoutvr.notifications import OneSignalNotifications
 from spaceoutvr.storage import WatsonStorage, MiscStorage
 from spaceoutvr.facebook import FacebookBackend
-# from spaceoutvr.twitter import TwitterBackend
-
-from twitter import *
 
 from datetime import datetime
 
@@ -46,6 +43,7 @@ import hashlib
 import hmac
 import json
 import requests
+import twitter
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -64,8 +62,8 @@ def is_null_or_empty(s):
         return True
     return False
 
-def generate_random_name(user):
-    original = user.email.split("@")[0]
+def generate_random_name(email):
+    original = email.split("@")[0]
     username = original
     intents = 0
     while intents < 100:
@@ -825,7 +823,7 @@ class AuthenticateEmailView(GenericAPIView):
                                     return Response(status=status.HTTP_401_UNAUTHORIZED)
                             else:
                                 # user has spacer name
-                                return Response({'code':5, 'spacer_suggestion':generate_random_name(user), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+                                return Response({'code':5, 'spacer_suggestion':generate_random_name(user.email), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
                     else:
                         # user not verified
                         return Response({'code':4, 'debug':"Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue."}, status=status.HTTP_200_OK)
@@ -868,12 +866,43 @@ class AuthenticateTwitterView(GenericAPIView):
 
         access_token = request.data["id"]
         access_token_verif = request.data["access_token_verif"]
+        print("TOKENS %s - %s" % (access_token, access_token_verif))
 
-        # t = Twitter(auth=OAuth(access_token, access_token_verif, "", con_secret_key))
-        # twitter = TwitterBackend()
-        # twitter.authenticate(access_token, access_token_verif)
+        api = twitter.Api(consumer_key=settings.TWITTER_CONSUMER_KEY,
+                              consumer_secret=settings.TWITTER_CONSUMER_SECRET,
+                              access_token_key=access_token,
+                              access_token_secret=access_token_verif)
 
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # try:
+        twitter_user = api.VerifyCredentials(include_email=True)
+        print(twitter_user)
+        print(twitter_user.email)
+        try:
+            existing_user = SpaceoutUser.objects.get(twitter_id=twitter_user.id)
+            existing_user.twitter_token = access_token
+        except MultipleObjectsReturned:
+            existing_user = SpaceoutUser.objects.filter(twitter_id=twitter_user.id)[0]
+            existing_user.twitter_token = access_token
+        except SpaceoutUser.DoesNotExist:
+            try:
+                existing_user = SpaceoutUser.objects.get(email=twitter_user.email)
+            except SpaceoutUser.DoesNotExist:
+                if spacer_name_provided:
+                    # signup
+                    existing_user = SpaceoutUser.objects.create_user(
+                        email=twitter_user.email,
+                        user_name=request.data["user_name"],
+                        twitter_id=twitter_user.id,
+                        twitter_token=access_token
+                    )
+                else:
+                    return Response({'code':5, 'spacer_suggestion':generate_random_name(twitter_user.screen_name), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+
+        existing_user.save()
+        return Response({'code':0, 'token': token, 'debug': 'Logged in'}, status=status.HTTP_200_OK)
+        # except:
+            # return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class AuthenticateFacebookView(GenericAPIView):
@@ -917,7 +946,7 @@ class AuthenticateFacebookView(GenericAPIView):
                         access_token
                     )
                 else:
-                    return Response({'code':5, 'spacer_suggestion':generate_random_name(user), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
+                    return Response({'code':5, 'spacer_suggestion':generate_random_name(fb_email), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
             # try to login
             token = facebook.login(access_token)

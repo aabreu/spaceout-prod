@@ -55,6 +55,7 @@ class SpaceoutUser(EmailAbstractUser):
     facebook_token = models.CharField(max_length=256, default='', blank=True)
     reddit_id = models.CharField(max_length=128, default='', blank=True)
     twitter_id = models.CharField(max_length=128, default='', blank=True)
+    twitter_token = models.CharField(max_length=256, default='', blank=True)
     soundcloud_id = models.CharField(max_length=128, default='', blank=True)
     fb_gender = models.CharField(max_length=10, default='', blank=True)
     fb_location = models.CharField(max_length=128, default='', blank=True)
