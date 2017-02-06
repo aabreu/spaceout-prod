@@ -36,7 +36,9 @@ from spaceoutvr.models import WatsonInput, WatsonOutput, WatsonBlacklist, person
 from spaceoutvr.notifications import OneSignalNotifications
 from spaceoutvr.storage import WatsonStorage, MiscStorage
 from spaceoutvr.facebook import FacebookBackend
-from spaceoutvr.twitter import TwitterBackend
+# from spaceoutvr.twitter import TwitterBackend
+
+from twitter import *
 
 from datetime import datetime
 
@@ -867,8 +869,9 @@ class AuthenticateTwitterView(GenericAPIView):
         access_token = request.data["id"]
         access_token_verif = request.data["access_token_verif"]
 
-        twitter = TwitterBackend()
-        twitter.authenticate(access_token, access_token_verif)
+        # t = Twitter(auth=OAuth(access_token, access_token_verif, "", con_secret_key))
+        # twitter = TwitterBackend()
+        # twitter.authenticate(access_token, access_token_verif)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
