@@ -106,6 +106,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField()
     email = serializers.CharField()
     has_password = serializers.SerializerMethodField()
+    is_verified = serializers.BooleanField()
     facebook_id = serializers.CharField()
     soundcloud_id = serializers.CharField()
     reddit_id = serializers.CharField()
@@ -123,7 +124,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'user_name', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id',
-                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email', 'has_password',
+                  'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email', 'has_password', 'is_verified',
                   'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url', 'avatar_url',
                   'personality_insights_output_url', 'last_activity',
                   'spaceoutroom_set')
