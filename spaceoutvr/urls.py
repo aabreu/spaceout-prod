@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^api/accounts/authenticate/email/$', views.AuthenticateEmailView.as_view(), name='email_authenticate'),
     url(r'^api/accounts/authenticate/email/resend/$', views.AuthenticateEmailResendView.as_view(), name='email_authenticate_resend'),
 
+    url(r'^api/accounts/status/$', views.StatusView.as_view(), name='status'),
     url(r'^api/accounts/profile/$', views.ProfileView.as_view(), name='me'),
     url(r'^api/accounts/password/add/$', views.AddPasswordView.as_view(), name='add_password'),
     url(r'^api/accounts/password/change/$', views.ChangePasswordView.as_view(), name='change_password'),

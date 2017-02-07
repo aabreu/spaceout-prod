@@ -431,6 +431,12 @@ class ChangeEmailView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class StatusView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+        return Response({'is_verified':user.is_verified, 'has_password':user.hasPassword()}, status=status.HTTP_200_OK)
+
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = SpaceoutUserSerializer
@@ -541,7 +547,6 @@ class CommentView(APIView):
 
 class NotificationsView(APIView):
     permission_classes = (IsAuthenticated,)
-
     def get(self, request, format=None):
         user = request.user
         return Response(SpaceoutUserNotificationsSerializer(user).data)
@@ -867,7 +872,7 @@ class AuthenticateTwitterView(GenericAPIView):
         access_token = request.data["id"]
         access_token_verif = request.data["access_token_verif"]
 
-        # print("TOKENS %s - %s" % (access_token, access_token_verif))
+        print("TOKENS %s - %s" % (access_token, access_token_verif))
 
         api = twitter.Api(consumer_key=settings.TWITTER_CONSUMER_KEY,
                               consumer_secret=settings.TWITTER_CONSUMER_SECRET,
@@ -877,8 +882,10 @@ class AuthenticateTwitterView(GenericAPIView):
         # try:
         twitter_user = api.VerifyCredentials(include_email=True)
 
-        if twitter_user.email == None:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        print(twitter_user)
+
+        # if twitter_user.email == None:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             existing_user = SpaceoutUser.objects.get(twitter_id=twitter_user.id)
@@ -896,12 +903,19 @@ class AuthenticateTwitterView(GenericAPIView):
                         spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
                         return Response({'code':6, 'debug':"signin_spacername_already_exist"}, status=status.HTTP_200_OK)
                     except SpaceoutUser.DoesNotExist:
-                        existing_user = SpaceoutUser.objects.create_user(
-                            email=twitter_user.email,
-                            user_name=request.data["user_name"],
-                            twitter_id=twitter_user.id,
-                            twitter_token=access_token
-                        )
+                        if twitter_user.email == None:
+                            existing_user = SpaceoutUser.objects.create_user(
+                                user_name=request.data["user_name"],
+                                twitter_id=twitter_user.id,
+                                twitter_token=access_token
+                            )
+                        else:
+                            existing_user = SpaceoutUser.objects.create_user(
+                                email=twitter_user.email,
+                                user_name=request.data["user_name"],
+                                twitter_id=twitter_user.id,
+                                twitter_token=access_token
+                            )
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(twitter_user.screen_name), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
