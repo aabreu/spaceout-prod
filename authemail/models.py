@@ -17,7 +17,7 @@ def _generate_code():
 
 
 class EmailUserManager(BaseUserManager):
-    def _create_user(self, email, password, is_staff, is_superuser, 
+    def _create_user(self, email, password, is_staff, is_superuser,
                      is_verified, **extra_fields):
         """
         Creates and saves a User with a given email and password.
@@ -26,18 +26,21 @@ class EmailUserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         email = self.normalize_email(email)
-        user = self.model(email=email, 
+        user = self.model(email=email,
                           is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, is_verified=is_verified,
                           last_login=now, date_joined=now, **extra_fields)
-        user.set_password(password)
+
+        if not password == None:
+            user.set_password(password)
+
         user.save(using=self._db)
         return user
 
     def create_user(self, email, password=None, **extra_fields):
         return self._create_user(email, password, False, False, False,
             **extra_fields)
-    
+
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(email, password, True, True, True,
             **extra_fields)
@@ -163,7 +166,7 @@ class SignupCode(AbstractBaseCode):
     ipaddr = models.GenericIPAddressField(_('ip address'))
 
     objects = SignupCodeManager()
-    
+
     def send_signup_email(self):
         prefix = 'signup_email'
         self.send_email(prefix)

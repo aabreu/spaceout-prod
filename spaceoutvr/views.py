@@ -866,7 +866,8 @@ class AuthenticateTwitterView(GenericAPIView):
 
         access_token = request.data["id"]
         access_token_verif = request.data["access_token_verif"]
-        print("TOKENS %s - %s" % (access_token, access_token_verif))
+
+        # print("TOKENS %s - %s" % (access_token, access_token_verif))
 
         api = twitter.Api(consumer_key=settings.TWITTER_CONSUMER_KEY,
                               consumer_secret=settings.TWITTER_CONSUMER_SECRET,
@@ -875,8 +876,10 @@ class AuthenticateTwitterView(GenericAPIView):
 
         # try:
         twitter_user = api.VerifyCredentials(include_email=True)
-        print(twitter_user)
-        print(twitter_user.email)
+
+        if twitter_user.email == None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         try:
             existing_user = SpaceoutUser.objects.get(twitter_id=twitter_user.id)
             existing_user.twitter_token = access_token
@@ -889,12 +892,16 @@ class AuthenticateTwitterView(GenericAPIView):
             except SpaceoutUser.DoesNotExist:
                 if spacer_name_provided:
                     # signup
-                    existing_user = SpaceoutUser.objects.create_user(
-                        email=twitter_user.email,
-                        user_name=request.data["user_name"],
-                        twitter_id=twitter_user.id,
-                        twitter_token=access_token
-                    )
+                    try:
+                        spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
+                        return Response({'code':6, 'debug':"signin_spacername_already_exist"}, status=status.HTTP_200_OK)
+                    except SpaceoutUser.DoesNotExist:
+                        existing_user = SpaceoutUser.objects.create_user(
+                            email=twitter_user.email,
+                            user_name=request.data["user_name"],
+                            twitter_id=twitter_user.id,
+                            twitter_token=access_token
+                        )
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(twitter_user.screen_name), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
@@ -938,13 +945,17 @@ class AuthenticateFacebookView(GenericAPIView):
 
             except SpaceoutUser.DoesNotExist:
                 if spacer_name_provided:
-                    # signup
-                    facebook.signup(
-                        fb_email,
-                        request.data["user_name"],
-                        fb_id,
-                        access_token
-                    )
+                    try:
+                        spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
+                        return Response({'code':6, 'debug':"signin_spacername_already_exist"}, status=status.HTTP_200_OK)
+                    except SpaceoutUser.DoesNotExist:
+                        # signup
+                        facebook.signup(
+                            fb_email,
+                            request.data["user_name"],
+                            fb_id,
+                            access_token
+                        )
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(fb_email), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
