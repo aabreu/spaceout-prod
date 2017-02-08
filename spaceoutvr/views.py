@@ -887,6 +887,17 @@ class AuthenticateTwitterView(GenericAPIView):
         twitter_user = api.VerifyCredentials(include_email="true")
         # print(twitter_user)
 
+        names = twitter_user.name.split(" ")
+        if names.__len__() > 1:
+            first_name = names[0]
+            last_name = names[1]
+        elif names.__len__() == 1:
+            first_name = names[0]
+            last_name = ""
+        else:
+            first_name = ""
+            last_name = ""
+
         try:
             existing_user = SpaceoutUser.objects.get(twitter_id=twitter_user.id)
         except MultipleObjectsReturned:
@@ -914,11 +925,15 @@ class AuthenticateTwitterView(GenericAPIView):
                                 twitter_id=twitter_user.id,
                                 twitter_token=access_token
                             )
+
+                        # existing_user.first_name = twitter_user.first_name
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(twitter_user.screen_name), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
         existing_user.twitter_token = access_token
         existing_user.twitter_id = twitter_user.id
+        existing_user.first_name = first_name
+        existing_user.last_name = last_name
         existing_user.save()
 
         token, created = Token.objects.get_or_create(user=existing_user)
@@ -967,12 +982,17 @@ class AuthenticateFacebookView(GenericAPIView):
                         return Response({'code':6, 'debug':"signin_spacername_already_exist"}, status=status.HTTP_200_OK)
                     except SpaceoutUser.DoesNotExist:
                         # signup
-                        facebook.signup(
+                        new_user = facebook.signup(
                             fb_email,
                             request.data["user_name"],
                             fb_id,
                             access_token
                         )
+                        if "first_name" in data:
+                            new_user.first_name = data["first_name"]
+                        if "last_name" in data:
+                            new_user.last_name = data["last_name"]
+                        new_user.save()
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(fb_email), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
@@ -985,7 +1005,7 @@ class AuthenticateFacebookView(GenericAPIView):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         except:
-            print("access token not valid %s" % access_token)
+            # print("access token not valid %s" % access_token)
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 

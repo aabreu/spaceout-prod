@@ -21,11 +21,23 @@ class FacebookBackend(object):
         try:
             existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
             existing_user.facebook_token = access_token
+
+            if "first_name" in data:
+                existing_user.first_name = data["first_name"]
+            if "last_name" in data:
+                existing_user.last_name = data["last_name"]
+
             existing_user.save()
             return existing_user
         except MultipleObjectsReturned:
             existing_user = SpaceoutUser.objects.filter(facebook_id=fb_id)[0]
             existing_user.facebook_token = access_token
+
+            if "first_name" in data:
+                existing_user.first_name = data["first_name"]
+            if "last_name" in data:
+                existing_user.last_name = data["last_name"]
+
             existing_user.save()
             return existing_user
         except SpaceoutUser.DoesNotExist:
@@ -65,7 +77,7 @@ class FacebookBackend(object):
         appsecret_proof = h.hexdigest()
 
         # make sure token is valid
-        api_call = "https://graph.facebook.com/me/?access_token=%s&appsecret_proof=%s&fields=id,name,email" % (access_token, appsecret_proof)
+        api_call = "https://graph.facebook.com/me/?access_token=%s&appsecret_proof=%s&fields=id,first_name,last_name,email" % (access_token, appsecret_proof)
         r = requests.get(api_call)
         data = r.json()
         return data
