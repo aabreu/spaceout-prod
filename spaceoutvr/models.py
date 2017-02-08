@@ -81,6 +81,12 @@ class SpaceoutUser(EmailAbstractUser):
     def hasPassword(self):
         return self.password != None and self.password != ''
 
+    @classmethod
+    def createTwitterUser(cls, user_name, twitter_id, twitter_token):
+        user = cls(user_name=user_name, twitter_id=twitter_id, twitter_token=twitter_token)
+        return user
+
+
 class SpaceoutRoomDefinition(models.Model):
     ROOM_TYPE_HOME = 0
     ROOM_TYPE_360 = 1
