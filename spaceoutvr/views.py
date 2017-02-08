@@ -876,7 +876,7 @@ class AuthenticateTwitterView(GenericAPIView):
         access_token = request.data["id"]
         access_token_verif = request.data["access_token_verif"]
 
-        print("TOKENS %s - %s" % (access_token, access_token_verif))
+        # print("TOKENS %s - %s" % (access_token, access_token_verif))
 
         api = twitter.Api(consumer_key=settings.TWITTER_CONSUMER_KEY,
                               consumer_secret=settings.TWITTER_CONSUMER_SECRET,
@@ -885,19 +885,12 @@ class AuthenticateTwitterView(GenericAPIView):
 
         # try:
         twitter_user = api.VerifyCredentials(include_email="true")
-
-        print(twitter_user)
-
-        if twitter_user.email != None:
-            print("EMAIL >>>>> %s" % twitter_user.email)
-        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # print(twitter_user)
 
         try:
             existing_user = SpaceoutUser.objects.get(twitter_id=twitter_user.id)
-            existing_user.twitter_token = access_token
         except MultipleObjectsReturned:
             existing_user = SpaceoutUser.objects.filter(twitter_id=twitter_user.id)[0]
-            existing_user.twitter_token = access_token
         except SpaceoutUser.DoesNotExist:
             try:
                 existing_user = SpaceoutUser.objects.get(email=twitter_user.email)
@@ -924,6 +917,8 @@ class AuthenticateTwitterView(GenericAPIView):
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(twitter_user.screen_name), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
 
+        existing_user.twitter_token = access_token
+        existing_user.twitter_id = twitter_user.id
         existing_user.save()
 
         token, created = Token.objects.get_or_create(user=existing_user)

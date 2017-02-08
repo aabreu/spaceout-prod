@@ -11,4 +11,3 @@ static3==0.6.1
 #django-rest-authemail
 requests
 PyYAML
-python-twitter
