@@ -484,6 +484,10 @@ class ProfileView(APIView):
                 user.first_name = request.data['first_name']
             if key == 'last_name':
                 user.last_name = request.data['last_name']
+            if key == 'user_name_for_voice':
+                user.user_name_for_voice = request.data['user_name_for_voice']
+            if key == 'play_intro':
+                user.play_intro = request.data['play_intro']
             if key == 'fb_gender':
                 user.fb_gender = request.data['fb_gender']
             if key == 'fb_location':

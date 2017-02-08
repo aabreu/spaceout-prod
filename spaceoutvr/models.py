@@ -47,6 +47,7 @@ def featured_directory_path(instance, filename):
 
 class SpaceoutUser(EmailAbstractUser):
     user_name = models.CharField(max_length=30, default="", unique=True)
+    user_name_for_voice = models.CharField(max_length=30, default="")
     phone_number = models.CharField(max_length=30, default='', blank=True)
     latitude = models.CharField(max_length=30, default='', blank=True)
     longitude = models.CharField(max_length=30, default='', blank=True)
@@ -61,6 +62,7 @@ class SpaceoutUser(EmailAbstractUser):
     fb_location = models.CharField(max_length=128, default='', blank=True)
     fb_birthdate = models.CharField(max_length=16, default='', blank=True)
     featured = models.BooleanField(default=False, blank=True)
+    play_intro = models.BooleanField(default=True, blank=True)
     last_activity = models.DateTimeField(default=timezone.now)
     popularity = models.IntegerField(default=0)
 
