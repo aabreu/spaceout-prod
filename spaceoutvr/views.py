@@ -12,6 +12,7 @@ from django.views.generic.edit import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from django.core.exceptions import MultipleObjectsReturned
+from django.contrib.auth import authenticate
 
 from authemail import wrapper
 from authemail.models import SignupCode
@@ -386,6 +387,15 @@ class CheckPasswordView(APIView):
         else:
             return Response(status=status.HTTP_200_OK)
 
+        # account = wrapper.Authemail()
+        # account.base_uri = "%s/api" % settings.SERVER_URL
+        # response = account.login(email=logged_in_user.email, password=request.data["password"])
+        #
+        # if "token" in response:
+        #     return Response(status=status.HTTP_200_OK)
+        # else:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 class ChangeSpacerNameView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
@@ -733,6 +743,7 @@ class SearchView(APIView):
 
 class AuthenticateEmailResendView(GenericAPIView):
     def post(self, request, format=None):
+
         if not 'id' in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -773,7 +784,6 @@ class AuthenticateEmailView(GenericAPIView):
                         return Response({'code':4, 'debug':'Please check your email and click the link to verify your email addresss.\n Then tap the button below to continue.'}, status=status.HTTP_200_OK)
 
                     # password was provided, login!
-                    print("Login %s %s" % (request.data["id"], request.data["password"]))
                     if user.is_verified:
                         if has_spacer_name:
                             if is_null_or_empty(request.data["id"]):
@@ -788,10 +798,12 @@ class AuthenticateEmailView(GenericAPIView):
                             except SignupCode.DoesNotExist:
                                 pass
 
+
                             # Login
                             account = wrapper.Authemail()
                             account.base_uri = "%s/api" % settings.SERVER_URL
                             response = account.login(email=request.data["id"], password=request.data["password"])
+
                             if 'token' in response:
                                 response['code'] = 0
                                 response['debug'] = 'Logged in'

@@ -29,7 +29,7 @@ class Signup(APIView):
         UserModel = get_user_model()
         try:
             existing_user = UserModel.objects.get(user_name=user_name)
-            print("checking %s exists? %s" % (user_name, existing_user))
+            # print("checking %s exists? %s" % (user_name, existing_user))
             content = {'detail':
                 _('User name already exist, try a different one.')}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
@@ -97,13 +97,13 @@ class SignupVerify(APIView):
         code = request.GET.get('code', '')
         verified = SignupCode.objects.set_user_is_verified(code)
 
-        print("VERIFIED? %s" % verified)
+        # print("VERIFIED? %s" % verified)
 
         if verified:
             try:
-                print("checking code=%s" % code)
+                # print("checking code=%s" % code)
                 signup_code = SignupCode.objects.get(code=code)
-                print("deletting code=%s"% code)
+                # print("deletting code=%s"% code)
                 signup_code.delete()
             except SignupCode.DoesNotExist:
                 print("code does not exist code=%s" % code)
