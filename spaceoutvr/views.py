@@ -335,6 +335,17 @@ class ContentView(APIView):
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+class DeleteAccountView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        user = request.user
+        tokens = Token.objects.filter(user=request.user)
+        for token in tokens:
+            token.delete()
+        user.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
 class AddPasswordView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
