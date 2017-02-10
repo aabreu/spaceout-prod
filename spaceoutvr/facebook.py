@@ -21,6 +21,7 @@ class FacebookBackend(object):
         try:
             existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
             existing_user.facebook_token = access_token
+            existing_user.signin_method = SpaceoutUser.SIGNIN_FACEBOOK
 
             if "first_name" in data:
                 existing_user.first_name = data["first_name"]
@@ -32,6 +33,7 @@ class FacebookBackend(object):
         except MultipleObjectsReturned:
             existing_user = SpaceoutUser.objects.filter(facebook_id=fb_id)[0]
             existing_user.facebook_token = access_token
+            existing_user.signin_method = SpaceoutUser.SIGNIN_FACEBOOK
 
             if "first_name" in data:
                 existing_user.first_name = data["first_name"]

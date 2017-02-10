@@ -818,6 +818,8 @@ class AuthenticateEmailView(GenericAPIView):
                             if 'token' in response:
                                 response['code'] = 0
                                 response['debug'] = 'Logged in'
+                                user.signin_method = SpaceoutUser.SIGNIN_EMAIL
+                                user.save()
                                 return Response(response, status=status.HTTP_200_OK)
                             else:
                                 # not authorized
@@ -845,6 +847,8 @@ class AuthenticateEmailView(GenericAPIView):
                                             return Response({'details':'signin_spacername_empty'}, status=status.HTTP_400_BAD_REQUEST)
 
                                         user.user_name = request.data["user_name"]
+                                        user.signin_method = SpaceoutUser.SIGNIN_EMAIL
+
                                         user.save()
 
                                         response['code'] = 0
@@ -957,6 +961,7 @@ class AuthenticateTwitterView(GenericAPIView):
         existing_user.twitter_id = twitter_user.id
         existing_user.first_name = first_name
         existing_user.last_name = last_name
+        existing_user.signin_method = SpaceoutUser.SIGNIN_TWITTER
         existing_user.save()
 
         token, created = Token.objects.get_or_create(user=existing_user)
@@ -996,6 +1001,7 @@ class AuthenticateFacebookView(GenericAPIView):
                 existing_user = SpaceoutUser.objects.get(email=fb_email)
                 existing_user.facebook_token = access_token
                 existing_user.facebook_id = fb_id
+                existing_user.signin_method = SpaceoutUser.SIGNIN_FACEBOOK
                 existing_user.save()
 
             except SpaceoutUser.DoesNotExist:

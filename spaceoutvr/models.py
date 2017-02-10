@@ -46,6 +46,14 @@ def featured_directory_path(instance, filename):
     )
 
 class SpaceoutUser(EmailAbstractUser):
+    SIGNIN_EMAIL = 0
+    SIGNIN_FACEBOOK = 1
+    SIGNIN_TWITTER = 2
+    SIGNIN_METHODS = (
+     (SIGNIN_EMAIL, 'Email'),
+     (SIGNIN_FACEBOOK, 'Facebook'),
+     (SIGNIN_TWITTER, 'Twitter'),
+    )
     user_name = models.CharField(max_length=30, default="", unique=True)
     user_name_for_voice = models.CharField(max_length=30, default="")
     phone_number = models.CharField(max_length=30, default='', blank=True)
@@ -65,6 +73,8 @@ class SpaceoutUser(EmailAbstractUser):
     play_intro = models.BooleanField(default=True, blank=True)
     last_activity = models.DateTimeField(default=timezone.now)
     popularity = models.IntegerField(default=0)
+
+    signin_method = models.IntegerField(default=0, choices=SIGNIN_METHODS)
 
     personality_insights_input_url = models.FileField(upload_to=personality_insights_input_directory_path, default=None, storage=WatsonStorage(), null=True, blank=True)
     personality_insights_output_url = models.FileField(upload_to=personality_insights_output_directory_path, default=None, storage=MiscStorage(), null=True, blank=True)
