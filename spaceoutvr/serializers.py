@@ -100,9 +100,6 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     def get_has_password(self, user):
         return user.hasPassword()
 
-    def get_signin_method_hack(self, user):
-        return user.signin_method
-
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -125,14 +122,15 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     avatar_url = serializers.CharField()
     personality_insights_output_url = serializers.SerializerMethodField()
     last_activity = serializers.DateTimeField()
-    signin_method_hack = serializers.SerializerMethodField()
+    # signin_method = serializers.IntegerField()
+    signin_method = serializers.ChoiceField(choices=SpaceoutUser.SIGNIN_METHODS)
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
         fields = ('id', 'user_name', 'first_name', 'last_name', 'featured', 'latitude', 'longitude', 'notification_id',
                   'facebook_id', 'soundcloud_id', 'reddit_id', 'twitter_id', 'email', 'has_password', 'is_verified',
                   'fb_gender', 'fb_location', 'fb_birthdate', 'featured_input_url', 'featured_page_url', 'avatar_url',
-                  'personality_insights_output_url', 'last_activity', 'user_name_for_voice', 'play_intro', 'signin_method_hack',
+                  'personality_insights_output_url', 'last_activity', 'user_name_for_voice', 'play_intro', 'signin_method',
                   'spaceoutroom_set')
 
     depth = 2
