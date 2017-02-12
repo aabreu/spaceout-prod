@@ -100,6 +100,9 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     def get_has_password(self, user):
         return user.hasPassword()
 
+    def get_signin_method(self, user):
+        return user.signin_method
+
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -122,7 +125,7 @@ class SpaceoutUserSerializer(serializers.ModelSerializer):
     avatar_url = serializers.CharField()
     personality_insights_output_url = serializers.SerializerMethodField()
     last_activity = serializers.DateTimeField()
-    signin_method = serializers.IntegerField()
+    signin_method = serializers.SerializerMethodField()
     spaceoutroom_set = SpaceoutRoomSerializer(many=True)
     class Meta:
         model = SpaceoutUser
