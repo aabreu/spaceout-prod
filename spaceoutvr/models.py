@@ -140,11 +140,13 @@ class SpaceoutContent(models.Model):
     SOURCE_TYPE_WIKI = 1
     SOURCE_TYPE_YOUTUBE = 2
     SOURCE_TYPE_GOOGLE_IMAGE = 3
+    SOURCE_TYPE_PROFILE_IMAGE = 4
     SOURCE_TYPES = (
      (SOURCE_TYPE_GIPHY, 'Giphy'),
      (SOURCE_TYPE_WIKI, 'Wiki'),
      (SOURCE_TYPE_YOUTUBE, 'Youtube'),
      (SOURCE_TYPE_GOOGLE_IMAGE, 'Google Images'),
+     (SOURCE_TYPE_PROFILE_IMAGE, 'Profile Image'),
     )
 
     type = models.IntegerField(default=0, choices=CONTENT_TYPES)
