@@ -91,6 +91,10 @@ class SpaceoutUser(EmailAbstractUser):
     def hasPassword(self):
         return self.password != None and self.password != ''
 
+    def __unicode__(self):
+       return self.SIGNIN_METHODS[self.signin_method][1]
+
+
     @classmethod
     def createTwitterUser(cls, user_name, twitter_id, twitter_token):
         user = cls(user_name=user_name, twitter_id=twitter_id, twitter_token=twitter_token)
