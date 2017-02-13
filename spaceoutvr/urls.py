@@ -45,7 +45,7 @@ urlpatterns = [
     #
     # url(r'^login/$', views.LoginView.as_view(), name='login_page'),
     # url(r'^home/$', views.HomeView.as_view(), name='home_page'),
-    # url(r'^logout/$', views.LogoutView.as_view(), name='logout_page'),
+    url(r'^logout/$', views.LogoutView.as_view(), name='logout_page'),
     #
     url(r'^password/reset/$', views.PasswordResetVerifyView.as_view(),
         name='password_reset_page'),

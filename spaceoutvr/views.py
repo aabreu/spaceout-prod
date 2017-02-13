@@ -127,9 +127,15 @@ class LoginView(FormView):
         return reverse('home_page')
 
 class LogoutView(View):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+
+        # clear notification
+        user = request.user
+        user.notification_id = ""
+        user.save()
+
         token = self.request.session['auth_token']
 
         account = wrapper.Authemail()
