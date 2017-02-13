@@ -990,10 +990,10 @@ class AuthenticateFacebookView(GenericAPIView):
         spacer_name_provided = "user_name" in request.data
 
         facebook = FacebookBackend()
-        response = facebook.login(access_token)
-        if 'token' in response:
+        token = facebook.login(access_token)
+        if token != None:
             # logged in!
-            return Response(response, status=status.HTTP_200_OK)
+            return Response({'code':0, 'token': token, 'debug': 'Logged in'}, status=status.HTTP_200_OK)
 
         # check if there is an old account with the facebook email
         data = facebook.get_token_data(access_token)

@@ -18,6 +18,7 @@ class FacebookBackend(object):
         data = self.get_token_data(access_token)
         fb_email = data['email']
         fb_id = data['id']
+
         try:
             existing_user = SpaceoutUser.objects.get(facebook_id=fb_id)
             existing_user.facebook_token = access_token
