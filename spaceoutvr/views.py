@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth import authenticate
+from django.db import IntegrityError
 
 from authemail import wrapper
 from authemail.models import SignupCode
@@ -446,9 +447,12 @@ class ChangeEmailView(APIView):
         if "id" in request.data:
             user.email = request.data["id"]
             user.is_verified = False
-            user.save()
-            send_signup_email(user, request)
-            return Response(status=status.HTTP_200_OK)
+            try:
+                user.save()
+                send_signup_email(user, request)
+                return Response(status=status.HTTP_200_OK)
+            except IntegrityError:
+                return Response({'details':'portrait_signup_already_exists1'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
