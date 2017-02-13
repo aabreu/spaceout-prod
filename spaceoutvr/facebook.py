@@ -52,7 +52,7 @@ class FacebookBackend(object):
             token, created = Token.objects.get_or_create(user=user)
             return token.key
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return None
 
     def signup(self, email, spacer_name, facebook_id, access_token):
         new_user = SpaceoutUser.objects.create_user(
