@@ -127,6 +127,8 @@ class LoginView(FormView):
         return reverse('home_page')
 
 class LogoutView(View):
+    # permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         token = self.request.session['auth_token']
 
@@ -421,7 +423,7 @@ class ChangeSpacerNameView(APIView):
         if "user_name" in request.data:
             try:
                 spacer = SpaceoutUser.objects.get(user_name=request.data["user_name"])
-                return Response({'code':6, 'debug':"Username already exist"}, status=status.HTTP_200_OK)
+                return Response({'details':'portrait_space_name_not_unique', 'debug':"Username already exist"}, status=status.HTTP_400_BAD_REQUEST)
             except SpaceoutUser.DoesNotExist:
                 user.user_name = request.data['user_name']
                 user.save()
