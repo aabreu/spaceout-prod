@@ -424,7 +424,7 @@ class ChangeSpacerNameView(APIView):
             except SpaceoutUser.DoesNotExist:
                 user.user_name = request.data['user_name']
                 user.save()
-                return Response(status=status.HTTP_200_OK)
+                return Response({'user_name':user.user_name}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
