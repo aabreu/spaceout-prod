@@ -70,7 +70,7 @@ class SpaceoutUser(EmailAbstractUser):
     fb_location = models.CharField(max_length=128, default='', blank=True)
     fb_birthdate = models.CharField(max_length=16, default='', blank=True)
     featured = models.BooleanField(default=False, blank=True)
-    play_intro = models.BooleanField(default=True, blank=True)
+    play_intro = models.BooleanField(default=False, blank=True)
     last_activity = models.DateTimeField(default=timezone.now)
     popularity = models.IntegerField(default=0)
 
@@ -97,7 +97,7 @@ class SpaceoutUser(EmailAbstractUser):
 
     @classmethod
     def createTwitterUser(cls, user_name, twitter_id, twitter_token):
-        user = cls(user_name=user_name, twitter_id=twitter_id, twitter_token=twitter_token)
+        user = cls(user_name=user_name, twitter_id=twitter_id, twitter_token=twitter_token, play_intro=True)
         return user
 
 

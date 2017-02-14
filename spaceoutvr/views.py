@@ -892,6 +892,7 @@ class AuthenticateEmailView(GenericAPIView):
 
                 new_user = SpaceoutUser.objects.create_user(email=request.data["id"])
                 new_user.set_password(request.data["password"])
+                new_user.play_intro = True
                 new_user.save()
 
                 send_signup_email(new_user, request)
@@ -962,7 +963,8 @@ class AuthenticateTwitterView(GenericAPIView):
                                 email=twitter_user.email,
                                 user_name=request.data["user_name"],
                                 twitter_id=twitter_user.id,
-                                twitter_token=access_token
+                                twitter_token=access_token,
+                                play_intro=True
                             )
 
                         # existing_user.first_name = twitter_user.first_name
@@ -1033,6 +1035,8 @@ class AuthenticateFacebookView(GenericAPIView):
                             new_user.first_name = data["first_name"]
                         if "last_name" in data:
                             new_user.last_name = data["last_name"]
+
+                        new_user.play_intro = True
                         new_user.save()
                 else:
                     return Response({'code':5, 'spacer_suggestion':generate_random_name(fb_email), 'debug':"Create your Spacer Name (or use our suggestion) to finish creating your account"}, status=status.HTTP_200_OK)
