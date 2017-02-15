@@ -747,7 +747,7 @@ class SearchView(APIView):
                 if "pageToken" in request.query_params:
                     page_token = request.query_params['pageToken']
                     url = url + "&pageToken=%s" % page_token
-                print(url)
+                # print(url)
                 r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
                 return Response(r.json())
         else:
@@ -759,7 +759,7 @@ class SearchView(APIView):
                 start_page = request.query_params['start']
                 url = url + "&start=%s" % start_page
 
-            print(url)
+            # print(url)
 
             r = requests.get(url, headers={'referer': 'spaceoutvr-prod.mybluemix.net'})
             return Response(r.json())
@@ -784,12 +784,12 @@ class AuthenticateEmailResendView(GenericAPIView):
 
 class AuthenticateEmailView(GenericAPIView):
     def post(self, request, format=None):
-        print("SignIn - Email")
+        # print("SignIn - Email")
         password_provided = "password" in request.data
         spacer_name_provided = "user_name" in request.data
 
-        print("password provided? %s" % password_provided)
-        print("space name provided? %s" % spacer_name_provided)
+        # print("password provided? %s" % password_provided)
+        # print("space name provided? %s" % spacer_name_provided)
 
         try:
             user = SpaceoutUser.objects.get(email=request.data["id"])
@@ -797,8 +797,8 @@ class AuthenticateEmailView(GenericAPIView):
             has_spacer_name = user.user_name != None and user.user_name != ''
             has_password = user.hasPassword()
 
-            print("has spacer name? %s" % has_spacer_name)
-            print("has password? %s" % has_password)
+            # print("has spacer name? %s" % has_spacer_name)
+            # print("has password? %s" % has_password)
 
             if has_password:
                 if password_provided:
@@ -903,7 +903,7 @@ class AuthenticateEmailView(GenericAPIView):
 
 class AuthenticateTwitterView(GenericAPIView):
     def post(self, request, format=None):
-        print("SignIn - Twitter")
+        # print("SignIn - Twitter")
 
         if not 'id' in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -988,7 +988,7 @@ class AuthenticateTwitterView(GenericAPIView):
 
 class AuthenticateFacebookView(GenericAPIView):
     def post(self, request, format=None):
-        print("SignIn - Facebook")
+        # print("SignIn - Facebook")
 
         if not 'id' in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
